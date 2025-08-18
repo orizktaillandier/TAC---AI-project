@@ -1,0 +1,317 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "API Response Schema",
+  "description": "Schema for validating API responses from the classification service",
+  "type": "object",
+  "definitions": {
+    "classification": {
+      "type": "object",
+      "properties": {
+        "contact": {
+          "type": "string"
+        },
+        "dealer_name": {
+          "type": "string"
+        },
+        "dealer_id": {
+          "type": "string"
+        },
+        "rep": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string",
+          "enum": [
+            "Product Activation — New Client",
+            "Product Activation — Existing Client",
+            "Product Cancellation",
+            "Problem / Bug",
+            "General Question",
+            "Analysis / Review",
+            "Other"
+          ]
+        },
+        "sub_category": {
+          "type": "string",
+          "enum": [
+            "Import",
+            "Export",
+            "Sales Data Import",
+            "FB Setup",
+            "Google Setup",
+            "Other Department",
+            "Other",
+            "AccuTrade"
+          ]
+        },
+        "syndicator": {
+          "type": "string"
+        },
+        "inventory_type": {
+          "type": "string",
+          "enum": [
+            "New",
+            "Used",
+            "Demo",
+            "New + Used"
+          ]
+        }
+      },
+      "required": [
+        "contact",
+        "dealer_name",
+        "dealer_id",
+        "rep",
+        "category",
+        "sub_category",
+        "syndicator",
+        "inventory_type"
+      ],
+      "additionalProperties": false
+    },
+    "error_response": {
+      "type": "object",
+      "properties": {
+        "error": {
+          "type": "string",
+          "description": "Error message"
+        },
+        "detail": {
+          "type": ["string", "array", "object"],
+          "description": "Detailed error information"
+        },
+        "code": {
+          "type": "integer",
+          "description": "Error code"
+        }
+      },
+      "required": ["error"],
+      "additionalProperties": false
+    },
+    "classification_result": {
+      "type": "object",
+      "properties": {
+        "ticket_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["success", "error"]
+        },
+        "classification": {
+          "$ref": "#/definitions/classification"
+        },
+        "pushed": {
+          "type": "boolean"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updated": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["ticket_id", "status"],
+      "additionalProperties": false
+    },
+    "push_result": {
+      "type": "object",
+      "properties": {
+        "ticket_id": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["success", "error", "preview"]
+        },
+        "fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "dry_run": {
+          "type": "boolean"
+        },
+        "changes": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "required": ["ticket_id", "status", "dry_run"],
+      "additionalProperties": false
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "uptime": {
+          "type": "number",
+          "description": "System uptime in seconds"
+        },
+        "processed": {
+          "type": "integer",
+          "description": "Total processed tickets"
+        },
+        "success_rate": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100,
+          "description": "Success rate percentage"
+        },
+        "avg_processing_time": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average processing time in seconds"
+        },
+        "active_workers": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of active workers"
+        },
+        "queue_size": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Current queue size"
+        },
+        "last_minute": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "last_hour": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        },
+        "last_day": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "integer"
+          }
+        }
+      },
+      "required": [
+        "uptime",
+        "processed",
+        "success_rate",
+        "avg_processing_time",
+        "active_workers",
+        "queue_size",
+        "last_minute",
+        "last_hour",
+        "last_day"
+      ],
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {
+      "title": "Classification Response",
+      "type": "object",
+      "properties": {
+        "ticket_id": {
+          "type": "string"
+        },
+        "classification": {
+          "$ref": "#/definitions/classification"
+        },
+        "raw_classification": {
+          "type": "object",
+          "description": "Raw classification output from AI"
+        },
+        "confidence_score": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "Classification confidence score"
+        },
+        "pushed": {
+          "type": "boolean",
+          "description": "Whether classification was pushed to Zoho"
+        },
+        "processing_time": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Processing time in seconds"
+        }
+      },
+      "required": ["classification"],
+      "additionalProperties": false
+    },
+    {
+      "title": "Batch Classification Response",
+      "type": "object",
+      "properties": {
+        "ok": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of successful classifications"
+        },
+        "err": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of failed classifications"
+        },
+        "results": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/classification_result"
+          }
+        },
+        "processing_time": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Total processing time in seconds"
+        }
+      },
+      "required": ["ok", "err", "results"],
+      "additionalProperties": false
+    },
+    {
+      "title": "Push Response",
+      "$ref": "#/definitions/push_result"
+    },
+    {
+      "title": "Metrics Response",
+      "$ref": "#/definitions/metrics"
+    },
+    {
+      "title": "Health Response",
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": ["ok", "error"]
+        },
+        "uptime": {
+          "type": "number",
+          "minimum": 0
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": ["status"],
+      "additionalProperties": false
+    },
+    {
+      "title": "Error Response",
+      "$ref": "#/definitions/error_response"
+    }
+  ]
+}

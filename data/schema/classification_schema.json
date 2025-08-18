@@ -1,0 +1,82 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Ticket Classification Schema",
+  "description": "Schema for validating automotive ticket classifications",
+  "type": "object",
+  "properties": {
+    "contact": {
+      "type": "string",
+      "description": "Contact person name",
+      "maxLength": 255
+    },
+    "dealer_name": {
+      "type": "string",
+      "description": "Dealer/dealership name",
+      "maxLength": 255
+    },
+    "dealer_id": {
+      "type": "string",
+      "description": "Unique dealer identifier",
+      "pattern": "^[0-9]+$",
+      "maxLength": 20
+    },
+    "rep": {
+      "type": "string",
+      "description": "Representative name",
+      "maxLength": 255
+    },
+    "category": {
+      "type": "string",
+      "description": "Ticket category",
+      "enum": [
+        "Product Activation — New Client",
+        "Product Activation — Existing Client",
+        "Product Cancellation",
+        "Problem / Bug",
+        "General Question",
+        "Analysis / Review",
+        "Other"
+      ]
+    },
+    "sub_category": {
+      "type": "string",
+      "description": "Ticket sub-category",
+      "enum": [
+        "Import",
+        "Export",
+        "Sales Data Import",
+        "FB Setup",
+        "Google Setup",
+        "Other Department",
+        "Other",
+        "AccuTrade"
+      ]
+    },
+    "syndicator": {
+      "type": "string",
+      "description": "Syndicator name",
+      "maxLength": 100
+    },
+    "inventory_type": {
+      "type": "string",
+      "description": "Type of inventory",
+      "enum": [
+        "New",
+        "Used",
+        "Demo",
+        "New + Used"
+      ]
+    }
+  },
+  "required": [
+    "contact",
+    "dealer_name",
+    "dealer_id",
+    "rep",
+    "category",
+    "sub_category",
+    "syndicator",
+    "inventory_type"
+  ],
+  "additionalProperties": false
+}

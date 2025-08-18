@@ -1,0 +1,2 @@
+﻿# UI Configuration
+API_URL = "http://localhost:8090"
