@@ -1,5 +1,4 @@
 # AI-Powered Dealer Support Ticket Classifier
-## Hackathon Demo - Fall 2025
 
 A revolutionary AI system that automatically classifies automotive dealer support tickets using GPT-5, improving dealer retention through faster response times and intelligent ticket routing.
 
