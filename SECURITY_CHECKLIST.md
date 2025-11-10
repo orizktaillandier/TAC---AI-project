@@ -20,7 +20,6 @@
 - [x] All rep names are mock (Rep_1, Rep_2, Rep_3)
 - [x] All revenue data is mock/fictional
 - [x] No real client information included
-- [x] Only public company names used (AutoTrader, Kijiji, Facebook - all public platforms)
 
 ### 4. Files Excluded from Git
 Files in `.gitignore`:
