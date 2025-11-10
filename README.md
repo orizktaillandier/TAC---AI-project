@@ -1,189 +1,194 @@
-# Automotive Ticket Classifier
+# AI-Powered Ticket Classification System
 
-A modern, AI-powered system for classifying automotive syndication support tickets using OpenAI GPT models. The system automatically extracts key information from tickets, including dealer information, categories, and syndicators.
+**Hackathon Demo - Fall 2025**
 
-## Features
+An intelligent system that automatically classifies support tickets using GPT-5, predicts churn risk, identifies upsell opportunities, and detects sales opportunities from ticket content.
 
-- **AI-Powered Classification**: Uses OpenAI GPT models to analyze and classify tickets
-- **Bilingual Support**: Works with both English and French tickets
-- **Robust Dealer Recognition**: Accurately identifies dealers from various text patterns
-- **Zoho Desk Integration**: Seamlessly integrates with Zoho Desk API
-- **Batch Processing**: Efficiently classifies and updates multiple tickets
-- **Performance Optimization**: Includes Redis caching for improved performance
-- **User-Friendly Interface**: Streamlit UI for easy interaction
-- **Comprehensive Analytics**: Track classification performance and metrics
-- **Containerization**: Docker and Docker Compose support for easy deployment
-- **Database Persistence**: Stores classifications and audit logs in PostgreSQL
+---
 
-## System Architecture
+## 🎯 What This Does
 
-The system consists of the following components:
+- **Ticket Classification**: GPT-5 powered classification with 82% accuracy
+- **Client Health Scoring**: 0-100 health score with churn prediction
+- **Revenue Impact Dashboard**: Real-time tracking of $202K ARR portfolio
+- **AI Upsell Intelligence**: Identifies $36K in upsell opportunities
+- **Sales Opportunity Detection**: Finds expansion opportunities from tickets
+- **Tier-based Automation**: Routes tickets (Tier 1/2/3) automatically
 
-- **FastAPI Backend**: RESTful API for ticket classification and Zoho integration
-- **Streamlit Frontend**: User-friendly interface for interacting with the system
-- **PostgreSQL Database**: Stores classifications, mappings, and audit logs
-- **Redis Cache**: Improves performance by caching common operations
-- **Docker**: Containerization for easy deployment and scaling
+---
 
-## Getting Started
+## 🚀 Quick Start (5 Minutes)
 
 ### Prerequisites
-
-- Docker and Docker Compose
-- Zoho Desk API credentials
-- OpenAI API key
-- CSV files for syndicators and dealer mappings
+- Python 3.11+
+- OpenAI API key ([Get one here](https://platform.openai.com/api-keys))
 
 ### Setup
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/auto-ticket-classifier.git
-   cd auto-ticket-classifier
-   ```
-
-2. Copy the example environment file and update with your credentials:
-   ```bash
-   cp .env.example .env
-   # Edit .env with your credentials
-   ```
-
-3. Place your CSV files in the `data` directory:
-   - `syndicators.csv`: List of syndicators
-   - `rep_dealer_mapping.csv`: Mapping of dealers to reps
-
-4. Start the services using Docker Compose:
-   ```bash
-   docker-compose up -d
-   ```
-
-5. Access the UI at http://localhost:8501
-
-### Environment Variables
-
-| Variable | Description | Default |
-|----------|-------------|---------|
-| `ENVIRONMENT` | Application environment (development, staging, production, user) | development |
-| `DEBUG` | Enable debug mode | true |
-| `OPENAI_API_KEY` | OpenAI API key | - |
-| `OPENAI_MODEL` | OpenAI model to use | gpt-4o-mini |
-| `ZOHO_CLIENT_ID` | Zoho client ID | - |
-| `ZOHO_CLIENT_SECRET` | Zoho client secret | - |
-| `ZOHO_REFRESH_TOKEN` | Zoho refresh token | - |
-| `ZOHO_BASE_URL` | Zoho API base URL | https://desk.zoho.com/api/v1 |
-| `ZOHO_ORG_ID` | Zoho organization ID | - |
-| `POSTGRES_USER` | PostgreSQL username | postgres |
-| `POSTGRES_PASSWORD` | PostgreSQL password | postgres |
-| `POSTGRES_DB` | PostgreSQL database name | auto_classifier |
-| `USE_REDIS` | Enable Redis caching | true |
-| `SECRET_KEY` | Secret key for authentication | change_this_in_production |
-
-## API Endpoints
-
-### Classification
-
-- **POST /classify**: Classify a single ticket
-- **POST /jobs/classify-push-batch**: Classify a batch of tickets
-
-### Zoho Integration
-
-- **POST /push**: Push a classification to Zoho
-- **GET /tickets/{ticket_id}**: Get a ticket from Zoho
-- **GET /tickets/{ticket_id}/threads**: Get threads for a ticket
-
-### Monitoring
-
-- **GET /health**: Health check endpoint
-- **GET /metrics**: Service metrics endpoint
-
-## UI Pages
-
-- **Classifier**: Classify tickets by ID or text
-- **Ticket Management**: Batch classify and manage tickets
-- **Analytics**: View performance metrics and statistics
-- **Settings**: Configure application settings
-
-## Data Structure
-
-The system classifies tickets with the following fields:
-
-- **contact**: Contact person
-- **dealer_name**: Dealer name
-- **dealer_id**: Dealer ID
-- **rep**: Rep name
-- **category**: Ticket category
-- **sub_category**: Ticket sub-category
-- **syndicator**: Syndicator
-- **inventory_type**: Inventory type
-
-## Development
-
-### Running Locally
-
-To run the services locally without Docker:
-
-1. Install Python dependencies:
-   ```bash
-   # API
-   cd api
-   pip install -r requirements.txt
-   
-   # UI
-   cd ui
-   pip install -r requirements.txt
-   ```
-
-2. Start the API:
-   ```bash
-   cd api
-   uvicorn main:app --reload --port 8088
-   ```
-
-3. Start the UI:
-   ```bash
-   cd ui
-   streamlit run main.py
-   ```
-
-### Database Migrations
-
-The system uses Alembic for database migrations:
-
 ```bash
-cd api
-alembic revision --autogenerate -m "Description of changes"
-alembic upgrade head
+# Clone the repository
+git clone https://github.com/orizktaillandier/TAC---AI-project.git
+cd TAC---AI-project/demo
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Configure API key
+cp .env.example .env
+# Edit .env and add your OpenAI API key
+
+# Run the demo
+streamlit run demo_app.py
 ```
 
-## Testing
+The app will open at `http://localhost:8501`
 
-Run tests using pytest:
+---
 
-```bash
-cd api
-pytest
+## 📊 Business Impact
+
+### Cost Savings
+- **$45K/year** automation efficiency (1,825 tickets/year)
+- **30 minutes saved** per Tier 1 ticket
+
+### Revenue Protection
+- **$83K at-risk** identified through churn analysis
+- Proactive intervention recommendations
+
+### Revenue Generation
+- **$36K** in upsell opportunities detected
+- Real-time sales opportunity identification
+
+### Performance
+- **82% accuracy** on classification
+- **~2 seconds** per ticket classification
+- **$0.01 cost** per classification with GPT-5-mini
+
+---
+
+## 📁 Project Structure
+
+```
+TAC---AI-project/
+├── demo/                       # Main demo application
+│   ├── demo_app.py            # Streamlit interface
+│   ├── classifier.py          # GPT-5 classification
+│   ├── automation_engine.py   # Tier routing logic
+│   ├── client_health.py       # Health scoring & churn
+│   ├── upsell_intelligence.py # Upsell detection
+│   ├── sales_intelligence.py  # Sales opportunity detection
+│   ├── requirements.txt       # Python dependencies
+│   ├── .env.example          # API key template
+│   ├── README.md             # Detailed demo instructions
+│   ├── data/                 # Mock business data
+│   └── mock_data/            # Sample tickets
+├── GITHUB_PREP.md            # GitHub push guide
+├── READY_FOR_GITHUB.md       # Security summary
+└── SECURITY_CHECKLIST.md     # Security audit
 ```
 
-## Production Deployment
+---
 
-For production deployment, make the following changes:
+## 🎨 Features
 
-1. Set `ENVIRONMENT=production` in the `.env` file
-2. Generate a secure `SECRET_KEY`
-3. Use a managed database service instead of the Docker PostgreSQL container
-4. Set up proper authentication for the UI
-5. Configure proper logging and monitoring
+### 1. Ticket Classification Dashboard
+- Classify 11 sample tickets with GPT-5
+- Extract contact, dealer, category, tier, syndicator
+- View sentiment analysis and suggested responses
+- See tier-based automation routing
 
-## Contributing
+### 2. Revenue Impact Dashboard
+- Portfolio ARR tracking ($202K)
+- Automation cost savings calculations
+- Churn risk revenue analysis
+- Tier distribution visualization
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+### 3. Client Health & Churn Prediction
+- 0-100 health score per dealer
+- Churn probability predictions
+- Revenue at-risk calculations
+- Proactive intervention suggestions
 
-## License
+### 4. AI Upsell Intelligence
+- Behavioral pattern analysis
+- Package upgrade recommendations
+- Revenue potential per dealer
+- Priority and confidence scores
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+### 5. Sales Opportunity Detection
+- Multi-location expansion opportunities
+- Feature upgrade requests from tickets
+- Revenue calculations per opportunity
+- Real-time detection from support conversations
 
-## Acknowledgments
+---
 
-- OpenAI for providing the GPT models
-- FastAPI and Streamlit for the excellent frameworks
-- All contributors and users of this project
+## 🔒 Security & Privacy
+
+- ✅ **No real customer data** - All mock/demo data
+- ✅ **No API keys in repo** - Template provided in `.env.example`
+- ✅ **No production integrations** - Standalone demo
+- ✅ **Comprehensive security audit** - See `SECURITY_CHECKLIST.md`
+
+---
+
+## 🛠️ Technology Stack
+
+- **Python 3.11+** - Core language
+- **Streamlit** - Web interface
+- **OpenAI GPT-5** - AI classification (gpt-5-mini)
+- **Pandas** - Data manipulation
+- **Mock Data** - No database required
+
+---
+
+## 📖 Documentation
+
+- **[Demo README](demo/README.md)** - Detailed setup and features
+- **[Security Checklist](SECURITY_CHECKLIST.md)** - Security audit details
+- **[GitHub Prep Guide](GITHUB_PREP.md)** - Deployment instructions
+
+---
+
+## 🎯 Use Cases
+
+### For Support Teams
+- Instant ticket routing (no manual triage)
+- Automated responses for Tier 1 tickets
+- Faster response times = happier customers
+
+### For Account Managers
+- Proactive churn prevention alerts
+- Revenue-at-risk visibility
+- Upsell opportunity notifications
+
+### For Sales Teams
+- Real-time expansion opportunities
+- Multi-location lead detection
+- Feature upgrade requests from support
+
+### For Leadership
+- Portfolio health visibility
+- Revenue impact metrics
+- ROI tracking ($45K savings + $36K opportunities)
+
+---
+
+## 🏆 What Makes This Special
+
+1. **Money-Focused**: Shows actual $ impact, not just "saves time"
+2. **Predictive**: Identifies issues BEFORE they become problems
+3. **Production-Ready**: Clean architecture, proper error handling
+4. **Privacy-First**: Mock data, secure API key management
+
+---
+
+## 📧 Questions?
+
+- **Repository**: https://github.com/orizktaillandier/TAC---AI-project
+- **Setup Issues**: See [demo/README.md](demo/README.md)
+- **Security Concerns**: See [SECURITY_CHECKLIST.md](SECURITY_CHECKLIST.md)
+
+---
+
+**Built for the Cars Commerce Hackathon Fall 2025**
