@@ -7,6 +7,7 @@ from typing import Dict, Any, Tuple, Optional
 import pandas as pd
 from openai import OpenAI
 from dotenv import load_dotenv
+from sentiment_analysis import SentimentAnalyzer
 
 load_dotenv()
 
@@ -29,6 +30,9 @@ class TicketClassifier:
         self.import_providers = self._load_import_providers()
         self.dealer_mapping = self._load_dealer_mapping()
 
+        # Initialize sentiment analyzer
+        self.sentiment_analyzer = SentimentAnalyzer()
+
         # Valid categories
         self.valid_categories = [
             "Product Activation — New Client",
@@ -42,8 +46,7 @@ class TicketClassifier:
 
         self.valid_subcategories = [
             "Import", "Export", "Sales Data Import",
-            "FB Setup", "Google Setup", "Other Department",
-            "Other", "AccuTrade"
+            "Other Department", "Other"
         ]
 
         self.valid_inventory_types = [
@@ -109,11 +112,15 @@ class TicketClassifier:
             # PHASE 4: Generate suggested response
             suggested_response = self._generate_response(classification, entities)
 
+            # PHASE 5: Sentiment Analysis
+            sentiment_data = self._analyze_sentiment(full_text, classification)
+
             return {
                 "success": True,
                 "classification": classification,
                 "entities": entities,
-                "suggested_response": suggested_response
+                "suggested_response": suggested_response,
+                "sentiment": sentiment_data
             }
 
         except Exception as e:
@@ -143,7 +150,7 @@ Extract ONLY the following information from the ticket and output as JSON:
 
 {{
   "dealer_name": "Name of dealership mentioned (e.g., Dealership_1, Dealership_4)",
-  "syndicators_mentioned": ["List of syndicators mentioned (e.g., Kijiji, AutoTrader, Facebook)"],
+  "syndicators_mentioned": ["List of syndicators mentioned (e.g., Syndicator_Export_A, Syndicator_Export_B)"],
   "providers_mentioned": ["List of import providers mentioned (e.g., Provider_Import_1, Provider_Import_2)"],
   "inventory_type": "If explicitly stated: New, Used, Demo, New + Used, In-Transit, AS-IS, or CPO. Otherwise empty",
   "action_keywords": ["List of action words found: activate, cancel, setup, disable, problem, bug, question, urgent, review, etc."],
@@ -301,18 +308,6 @@ Output only the JSON object with extracted entities:"""
                 # Default to first syndicator if export but no specific syndicator mentioned
                 classification["syndicator"] = self.syndicators[0] if self.syndicators else "Syndicator_Export_1"
             classification["provider"] = ""
-        elif any(word in actions for word in ["facebook", "fb"]):
-            classification["sub_category"] = "FB Setup"
-            classification["syndicator"] = self.syndicators[2] if len(self.syndicators) > 2 else "Syndicator_Export_3"
-            classification["provider"] = ""
-        elif any(word in actions for word in ["google"]):
-            classification["sub_category"] = "Google Setup"
-            classification["syndicator"] = self.syndicators[3] if len(self.syndicators) > 3 else "Syndicator_Export_4"
-            classification["provider"] = ""
-        elif "accutrade" in " ".join(actions):
-            classification["sub_category"] = "AccuTrade"
-            classification["syndicator"] = self.syndicators[4] if len(self.syndicators) > 4 else "Syndicator_Export_5"
-            classification["provider"] = ""
         else:
             # For "Other" sub-category, try to infer from syndicators/providers mentioned
             classification["sub_category"] = "Other"
@@ -446,16 +441,16 @@ Message: "Hi Support Team, Dealership_4 is still showing vehicles that were sold
 JSON: {{"contact": "", "dealer_name": "Dealership_4", "dealer_id": "", "rep": "", "category": "Problem / Bug", "sub_category": "Import", "syndicator": "", "provider": "Provider_Import_1", "inventory_type": "Unspecified", "tier": "Tier 2"}}
 
 Example 2:
-Message: "Please cancel the Kijiji export for Dealership_3."
-JSON: {{"contact": "", "dealer_name": "Dealership_3", "dealer_id": "", "rep": "", "category": "Product Cancellation", "sub_category": "Export", "syndicator": "Kijiji", "provider": "", "inventory_type": "Unspecified", "tier": "Tier 2"}}
+Message: "Please cancel the Syndicator_Export_1 export for Dealership_3."
+JSON: {{"contact": "", "dealer_name": "Dealership_3", "dealer_id": "", "rep": "", "category": "Product Cancellation", "sub_category": "Export", "syndicator": "Syndicator_Export_1", "provider": "", "inventory_type": "Unspecified", "tier": "Tier 2"}}
 
 Example 3:
 Message: "Quick question - can a dealer have separate feeds for new and used inventory?"
 JSON: {{"contact": "", "dealer_name": "", "dealer_id": "", "rep": "", "category": "General Question", "sub_category": "Other", "syndicator": "", "provider": "", "inventory_type": "Unspecified", "tier": "Tier 1"}}
 
 Example 4:
-Message: "URGENT: AutoTrader feed for Dealership_1 hasn't updated in 3 days. Client is calling constantly and threatening to cancel!"
-JSON: {{"contact": "", "dealer_name": "Dealership_1", "dealer_id": "", "rep": "", "category": "Problem / Bug", "sub_category": "Export", "syndicator": "AutoTrader", "provider": "", "inventory_type": "Unspecified", "tier": "Tier 3"}}
+Message: "URGENT: Syndicator_Export_4 feed for Dealership_1 hasn't updated in 3 days. Client is calling constantly and threatening to cancel!"
+JSON: {{"contact": "", "dealer_name": "Dealership_1", "dealer_id": "", "rep": "", "category": "Problem / Bug", "sub_category": "Export", "syndicator": "Syndicator_Export_4", "provider": "", "inventory_type": "Unspecified", "tier": "Tier 3"}}
 
 Example 5:
 Message: "New car pricing is not updating from Provider_Import_2 for Dealership_5. Website is off by $500."
@@ -681,6 +676,31 @@ Support Team"""
             response = response_templates.get(category, "Thank you for contacting us. We'll review your request and get back to you shortly.")
 
         return response
+
+    def _analyze_sentiment(self, ticket_text: str, classification: Dict[str, str]) -> Dict[str, Any]:
+        """
+        PHASE 5: Analyze sentiment and urgency of the ticket.
+
+        Args:
+            ticket_text: The ticket content
+            classification: The classification result
+
+        Returns:
+            Sentiment analysis result
+        """
+        try:
+            sentiment_data = self.sentiment_analyzer.analyze_sentiment(ticket_text, classification)
+            return sentiment_data
+        except Exception as e:
+            # Return default sentiment if analysis fails
+            return {
+                "score": 0,
+                "label": "Neutral",
+                "urgency_level": "Medium",
+                "escalation_risk": "Low",
+                "flags": [],
+                "recommendations": []
+            }
 
 
 def load_mock_tickets():

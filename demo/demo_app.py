@@ -1,146 +1,208 @@
 """
-AI-Powered Dealer Support Ticket Classifier
-Hackathon Demo - Fall 2025
+AI-Powered Ticket Classifier
+Simple classification demo - no extra features
 """
 import streamlit as st
 import json
+import os
+import time
 from datetime import datetime
+from openai import OpenAI
+from dotenv import load_dotenv
 from classifier import TicketClassifier, load_mock_tickets
-from automation_engine import AutomationEngine
-from client_health import ClientHealthEngine
-from upsell_intelligence import UpsellIntelligence
-from sales_intelligence import SalesIntelligence
+from knowledge_base import KnowledgeBase
+from kb_intelligence import KBIntelligence
+from feedback_manager import FeedbackManager
 
-# Page config
-st.set_page_config(
-    page_title="AI Ticket Classifier - Demo",
-    page_icon="🎯",
-    layout="wide"
-)
+load_dotenv()
 
-# Custom CSS
-st.markdown("""
-<style>
-    .main {
-        padding: 1rem;
-    }
-    .stButton>button {
-        width: 100%;
-    }
-    .success-box {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-        margin: 1rem 0;
-    }
-    .info-box {
-        padding: 1rem;
-        border-radius: 0.5rem;
-        background-color: #d1ecf1;
-        border: 1px solid #bee5eb;
-        margin: 1rem 0;
-    }
-    .metric-card {
-        background: white;
-        padding: 1.5rem;
-        border-radius: 0.5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        text-align: center;
-    }
-    .metric-value {
-        font-size: 2rem;
-        font-weight: bold;
-        color: #1f77b4;
-    }
-    .metric-label {
-        font-size: 0.9rem;
-        color: #666;
-        margin-top: 0.5rem;
-    }
-</style>
-""", unsafe_allow_html=True)
+# Page config (with safe handling for unified app import)
+try:
+    st.set_page_config(
+        page_title="AI Ticket Classifier",
+        page_icon="🎯",
+        layout="wide"
+    )
+except:
+    # Already configured by unified app
+    pass
 
-# Initialize session state
-if "classifier" not in st.session_state:
-    try:
-        st.session_state.classifier = TicketClassifier()
-        st.session_state.classifier_ready = True
-    except Exception as e:
-        st.session_state.classifier_ready = False
-        st.session_state.classifier_error = str(e)
 
-if "classifications" not in st.session_state:
-    st.session_state.classifications = []
-
-if "sales_opportunities" not in st.session_state:
-    st.session_state.sales_opportunities = []
-
-if "mock_tickets" not in st.session_state:
-    st.session_state.mock_tickets = load_mock_tickets()
-
-if "automation_engine" not in st.session_state:
-    st.session_state.automation_engine = AutomationEngine()
-
-# Header
-st.title("🎯 AI-Powered Dealer Support Ticket Classifier")
-st.markdown("### Revolutionizing Dealer Retention Through Intelligent Support Automation")
-
-# Check if classifier is ready
-if not st.session_state.classifier_ready:
-    st.error(f"⚠️ Classifier not ready: {st.session_state.get('classifier_error', 'Unknown error')}")
-    st.info("💡 Make sure your `.env` file has `OPENAI_API_KEY` set")
-    st.stop()
-
-# Sidebar
-with st.sidebar:
-    st.header("📊 Demo Stats")
-
-    col1, col2 = st.columns(2)
-    with col1:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value">{len(st.session_state.classifications)}</div>
-            <div class="metric-label">Classified</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    with col2:
-        st.markdown(f"""
-        <div class="metric-card">
-            <div class="metric-value">{len(st.session_state.mock_tickets)}</div>
-            <div class="metric-label">Sample Tickets</div>
-        </div>
-        """, unsafe_allow_html=True)
-
-    st.markdown("---")
-    st.markdown("### 🚀 Key Features")
+def main():
+    """Main function for the demo app"""
+    # Custom CSS
     st.markdown("""
-    - ✅ GPT-5 Powered Classification
-    - ✅ Sentiment Analysis
-    - ✅ Auto-Response Generation
-    - ✅ Key Action Item Extraction
-    - ✅ Bilingual Support (EN/FR)
-    - ✅ 10-Field Extraction + Tier
-    - ✅ Provider & Syndicator Detection
-    - ✅ Dealer Database Lookup
-    - ✅ 3-Tier Priority System
-    """)
+    <style>
+        .main {
+            padding: 1rem;
+        }
+        .stButton>button {
+            width: 100%;
+        }
+    </style>
+    """, unsafe_allow_html=True)
 
-    st.markdown("---")
-    st.markdown("### 💡 Business Value")
-    st.markdown("""
-    - **70% faster** ticket routing
-    - **Improved dealer satisfaction**
-    - **Reduced response times**
-    - **Better support metrics**
-    """)
+    # Initialize session state
+    if "classifier" not in st.session_state:
+        try:
+            st.session_state.classifier = TicketClassifier()
+            st.session_state.classifier_ready = True
+        except Exception as e:
+            st.session_state.classifier_ready = False
+            st.session_state.classifier_error = str(e)
 
-# Main content
-tab1, tab2, tab3, tab4 = st.tabs(["🎯 Classify Ticket", "📋 Sample Tickets", "💰 Revenue Impact", "💚 Client Health"])
+    if "kb" not in st.session_state:
+        try:
+            st.session_state.kb = KnowledgeBase()
+            st.session_state.kb_ready = True
+        except Exception as e:
+            st.session_state.kb_ready = False
+            st.session_state.kb_error = str(e)
 
-with tab1:
+    if "kb_intelligence" not in st.session_state:
+        try:
+            st.session_state.kb_intelligence = KBIntelligence()
+            st.session_state.kb_intelligence_ready = True
+        except Exception as e:
+            st.session_state.kb_intelligence_ready = False
+            st.session_state.kb_intelligence_error = str(e)
+
+    if "feedback_manager" not in st.session_state:
+        try:
+            st.session_state.feedback_manager = FeedbackManager()
+            st.session_state.feedback_manager_ready = True
+        except Exception as e:
+            st.session_state.feedback_manager_ready = False
+            st.session_state.feedback_manager_error = str(e)
+
+    if "mock_tickets" not in st.session_state:
+        st.session_state.mock_tickets = load_mock_tickets()
+
+    # Initialize feedback state
+    if "show_feedback" not in st.session_state:
+        st.session_state.show_feedback = False
+    if "current_resolution" not in st.session_state:
+        st.session_state.current_resolution = None
+    if "current_ticket_data" not in st.session_state:
+        st.session_state.current_ticket_data = None
+    if "kb_results_cache" not in st.session_state:
+        st.session_state.kb_results_cache = None
+
+    # Header
+    st.title("🎯 AI-Powered Ticket Classifier")
+    st.markdown("### Intelligent Support Ticket Classification")
+
+    # Check if classifier is ready
+    if not st.session_state.classifier_ready:
+        st.error(f"⚠️ Classifier not ready: {st.session_state.get('classifier_error', 'Unknown error')}")
+        st.info("💡 Make sure your `.env` file has `OPENAI_API_KEY` set")
+        st.stop()
+
+    # Sidebar
+    with st.sidebar:
+        st.header("📊 Info")
+
+        st.markdown("### What gets extracted:")
+        st.markdown("""
+        1. **Contact Name**
+        2. **Dealer Name**
+        3. **Dealer ID**
+        4. **Rep Name**
+        5. **Category**
+        6. **Sub-Category**
+        7. **Syndicator/Provider**
+        8. **Inventory Type**
+        9. **Tier** (1-3)
+        """)
+
+        st.markdown("---")
+        st.markdown("### Sample Tickets")
+        st.markdown(f"{len(st.session_state.mock_tickets)} available")
+
+        # KB Health Monitoring
+        st.markdown("---")
+        st.markdown("### 📈 KB Health")
+        try:
+            from kb_health_monitor import get_health_monitor
+            health_monitor = get_health_monitor()
+            critical_alerts = health_monitor.get_critical_alerts()
+
+            if critical_alerts:
+                st.error(f"⚠️ {len(critical_alerts)} Critical Issues")
+                for alert in critical_alerts:
+                    severity = alert.get("severity", "Unknown")
+                    message = alert.get("message", "")
+                    if severity == "Critical":
+                        st.error(f"🔴 {message}")
+                    elif severity == "High":
+                        st.warning(f"🟠 {message}")
+            else:
+                # Get overall health
+                health_report = health_monitor.get_health_report()
+                overall_health = health_report.get("overall_health", "Unknown")
+                success_rate = health_report["metrics"].get("overall_success_rate", 0)
+
+                if overall_health == "Good":
+                    st.success(f"✅ {overall_health}")
+                elif overall_health == "Fair":
+                    st.info(f"ℹ️ {overall_health}")
+                else:
+                    st.warning(f"⚠️ {overall_health}")
+
+                st.metric("Success Rate", f"{success_rate:.0%}")
+
+                # Show health details in expander
+                with st.expander("View Details"):
+                    metrics = health_report.get("metrics", {})
+                    st.caption(f"Total Usage: {metrics.get('total_usage', 0)}")
+                    st.caption(f"Low Performers: {len(metrics.get('low_performing_articles', []))}")
+                    st.caption(f"High Performers: {len(metrics.get('high_performing_articles', []))}")
+
+                    if health_report.get("recommendations"):
+                        st.markdown("**Recommendations:**")
+                        for rec in health_report["recommendations"][:3]:
+                            st.caption(f"• {rec}")
+        except Exception as e:
+            # Silently fail if health monitoring has issues
+            pass
+
+    # Main content
     st.header("Classify a Support Ticket")
+
+    # Proactive Pattern Detection Alerts
+    try:
+        from pattern_monitor import get_pattern_monitor
+        pattern_monitor = get_pattern_monitor()
+        active_alerts = pattern_monitor.get_active_alerts()
+
+        if active_alerts:
+            # Show critical alerts as banners
+            for alert in active_alerts[:3]:  # Show top 3 alerts
+                severity = alert.get("severity", "Low")
+                message = alert.get("message", "")
+                ticket_count = alert.get("ticket_count", 0)
+
+                if severity == "Critical":
+                    st.error(f"🚨 **CRITICAL PATTERN DETECTED:** {message} ({ticket_count} tickets affected)")
+                elif severity == "High":
+                    st.warning(f"⚠️ **HIGH PRIORITY:** {message} ({ticket_count} tickets affected)")
+                elif severity == "Medium":
+                    st.info(f"ℹ️ **Pattern Detected:** {message} ({ticket_count} tickets)")
+
+            # Show detailed pattern info in expander
+            if len(active_alerts) > 0:
+                with st.expander(f"🔍 View All Pattern Details ({len(active_alerts)} patterns detected)"):
+                    for alert in active_alerts:
+                        st.markdown(f"**Type:** {alert.get('type', 'Unknown')}")
+                        st.markdown(f"**Severity:** {alert.get('severity', 'Unknown')}")
+                        st.markdown(f"**Affected Tickets:** {alert.get('ticket_count', 0)}")
+                        st.markdown(f"**Recommendation:** {alert.get('recommendation', 'No recommendation')}")
+                        st.markdown("---")
+
+            st.markdown("---")
+    except Exception as e:
+        # Silently fail if pattern detection has issues
+        pass
 
     col1, col2 = st.columns([2, 1])
 
@@ -189,930 +251,448 @@ with tab1:
         classify_button = st.button("🚀 Classify with AI", type="primary")
 
     with col2:
-        st.subheader("Info")
+        st.subheader("GPT-5 Powered")
         st.info("""
-        **What gets extracted:**
+        This classifier uses **GPT-5-mini** to:
 
-        1. Contact Name
-        2. Dealer Name
-        3. Dealer ID
-        4. Rep Name
-        5. Category
-        6. Sub-Category
-        7. Syndicator (Export)
-        8. Provider (Import)
-        9. Inventory Type
-        10. **Tier Level** (1-3)
-
-        The AI analyzes the ticket and automatically extracts all relevant information.
-
-        **Tier Levels:**
-        - **Tier 1:** Simple (automated)
-        - **Tier 2:** Human required
-        - **Tier 3:** Urgent
+        - Extract key information
+        - Classify tickets accurately
+        - Determine priority tiers
+        - Identify syndicators/providers
         """)
 
-    # Classification
+    # Classification logic
     if classify_button:
         if not ticket_text.strip():
             st.error("Please enter ticket content")
         else:
-            with st.spinner("🤖 AI is analyzing the ticket..."):
+            with st.spinner("Classifying ticket..."):
                 result = st.session_state.classifier.classify(ticket_text, ticket_subject)
 
-                if result["success"]:
-                    classification = result["classification"]
-
-                    # Get current ticket data (for automation)
-                    current_ticket_data = {
-                        "subject": ticket_subject,
-                        "description": ticket_text,
-                        "requester_email": "requester@example.com"  # Default
-                    }
-
-                    # If loaded from sample tickets, get the full ticket data
-                    if input_method == "Load Sample Ticket" and selected:
-                        idx = int(selected.split(" - ")[0]) - 12345
-                        if 0 <= idx < len(st.session_state.mock_tickets):
-                            sample_ticket = st.session_state.mock_tickets[idx]
-                            current_ticket_data["requester_email"] = sample_ticket.get("requester_email", "requester@example.com")
-
-                    # Store for automation
-                    st.session_state.current_result = result
-                    st.session_state.current_ticket_data = current_ticket_data
-
-                    # Detect sales opportunities
-                    if "sales_engine" not in st.session_state:
-                        st.session_state.sales_engine = SalesIntelligence()
-
-                    # Get package from revenue data
-                    try:
-                        with open("data/dealer_revenue.json", "r") as f:
-                            revenue_data = json.load(f)
-                        dealer_id = classification.get("dealer_id", "Unknown")
-                        current_package = revenue_data.get(dealer_id, {}).get("package", "Standard")
-                    except:
-                        current_package = "Standard"
-
-                    sales_opportunity = st.session_state.sales_engine.detect_opportunity(
-                        ticket_text=ticket_text,
-                        ticket_subject=ticket_subject,
-                        dealer_id=classification.get("dealer_id", "Unknown"),
-                        dealer_name=classification.get("dealer_name", "Unknown Dealer"),
-                        current_package=current_package,
-                        classification=classification
-                    )
-
-                    if sales_opportunity["has_opportunity"]:
-                        st.session_state.sales_opportunities.append(sales_opportunity)
-
-                    # Store classification
-                    st.session_state.classifications.append({
-                        "timestamp": datetime.now().isoformat(),
-                        "subject": ticket_subject,
-                        "classification": classification,
-                        "sales_opportunity": sales_opportunity if sales_opportunity["has_opportunity"] else None
-                    })
-
-                    # Display success
-                    st.markdown('<div class="success-box">', unsafe_allow_html=True)
+                if result.get("success"):
                     st.success("✅ Classification Complete!")
-                    st.markdown('</div>', unsafe_allow_html=True)
 
-                    # Display results
-                    st.subheader("📊 Classification Results")
+                    classification = result["classification"]
+                    entities = result.get("entities", {})
+                    suggested_response = result.get("suggested_response", "")
 
-                    # Highlight tier prominently
-                    tier = classification.get("tier", "")
-                    tier_colors = {"Tier 1": "🟢", "Tier 2": "🟡", "Tier 3": "🔴"}
-                    tier_labels = {"Tier 1": "Simple/Automated", "Tier 2": "Human Required", "Tier 3": "Urgent"}
-
-                    if tier:
-                        tier_emoji = tier_colors.get(tier, "⚪")
-                        tier_label = tier_labels.get(tier, "Unknown")
-                        st.markdown(f"### {tier_emoji} **{tier}** - {tier_label}")
-                        st.markdown("---")
-
-                    col1, col2, col3 = st.columns(3)
-
-                    with col1:
-                        st.metric("Contact Name", classification.get("contact") or "—")
-                        st.metric("Dealer Name", classification.get("dealer_name") or "—")
-                        st.metric("Dealer ID", classification.get("dealer_id") or "—")
-
-                    with col2:
-                        st.metric("Rep", classification.get("rep") or "—")
-                        st.metric("Category", classification.get("category") or "—")
-                        st.metric("Sub-Category", classification.get("sub_category") or "—")
-
-                    with col3:
-                        st.metric("Syndicator (Export)", classification.get("syndicator") or "—")
-                        st.metric("Provider (Import)", classification.get("provider") or "—")
-                        st.metric("Inventory Type", classification.get("inventory_type") or "—")
-
-                    # AI-Enhanced Features Section
+                    # Display classification results
                     st.markdown("---")
-                    st.subheader("🤖 AI-Enhanced Insights")
+                    st.subheader("📋 Classification Results")
+                    st.markdown("**All 10 Extracted Fields:**")
 
-                    col1, col2 = st.columns(2)
-
+                    # Row 1: Main Classification
+                    col1, col2, col3, col4 = st.columns(4)
                     with col1:
-                        # Sentiment Analysis
-                        entities = result.get("entities", {})
-                        sentiment = entities.get("sentiment", "Neutral")
-                        sentiment_colors = {
-                            "Calm": ("🟢", "green"),
-                            "Neutral": ("🟦", "blue"),
-                            "Concerned": ("🟡", "orange"),
-                            "Frustrated": ("🟠", "orange"),
-                            "Urgent": ("🔴", "red"),
-                            "Critical": ("🔴", "red")
-                        }
-                        emoji, color = sentiment_colors.get(sentiment, ("⚪", "gray"))
-
-                        st.markdown(f"""
-                        <div style="background-color: #f0f2f6; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid {color};">
-                            <h4>{emoji} Sentiment: {sentiment}</h4>
-                            <p style="color: #666; font-size: 0.9rem;">Emotional tone detected from ticket language</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-
+                        st.metric("Category", classification.get("category", "N/A"))
                     with col2:
-                        # Key Action Items
-                        key_actions = entities.get("key_action_items", [])
-                        if key_actions:
-                            action_list = "".join([f"<li>{action}</li>" for action in key_actions[:3]])
-                            st.markdown(f"""
-                            <div style="background-color: #f0f2f6; padding: 1rem; border-radius: 0.5rem;">
-                                <h4>📋 Key Action Items</h4>
-                                <ul style="margin-top: 0.5rem; color: #333;">
-                                    {action_list}
-                                </ul>
-                            </div>
-                            """, unsafe_allow_html=True)
-                        else:
-                            st.markdown("""
-                            <div style="background-color: #f0f2f6; padding: 1rem; border-radius: 0.5rem;">
-                                <h4>📋 Key Action Items</h4>
-                                <p style="color: #666; font-size: 0.9rem;">No specific actions detected</p>
-                            </div>
-                            """, unsafe_allow_html=True)
+                        st.metric("Sub-Category", classification.get("sub_category", "N/A"))
+                    with col3:
+                        st.metric("Tier", classification.get("tier", "N/A"))
+                    with col4:
+                        st.metric("Inventory Type", classification.get("inventory_type", "N/A"))
 
-                    # Suggested Response
-                    if result.get("suggested_response"):
+                    # Row 2: Dealer Information
+                    col1, col2, col3, col4 = st.columns(4)
+                    with col1:
+                        st.metric("Contact", classification.get("contact", "N/A"))
+                    with col2:
+                        st.metric("Dealer Name", classification.get("dealer_name", "N/A"))
+                    with col3:
+                        st.metric("Dealer ID", classification.get("dealer_id", "N/A"))
+                    with col4:
+                        st.metric("Rep", classification.get("rep", "N/A"))
+
+                    # Row 3: Integration
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.metric("Syndicator", classification.get("syndicator", "N/A") or "N/A")
+                    with col2:
+                        st.metric("Provider", classification.get("provider", "N/A") or "N/A")
+
+                    # Sentiment Analysis Display
+                    sentiment = result.get("sentiment", {})
+                    if sentiment:
                         st.markdown("---")
-                        st.subheader("✉️ AI-Generated Response Suggestion")
-                        st.markdown("""
-                        <div style="background-color: #e8f4f8; padding: 1.5rem; border-radius: 0.5rem; border-left: 4px solid #1f77b4;">
-                        """, unsafe_allow_html=True)
-                        st.markdown(result["suggested_response"])
-                        st.markdown("</div>", unsafe_allow_html=True)
+                        st.markdown("### 💭 Sentiment & Urgency Analysis")
 
-                        # Add copy button hint
-                        st.caption("💡 Copy this suggested response to clipboard and customize as needed")
-
-                    # Sales Opportunity Detection
-                    if sales_opportunity["has_opportunity"]:
-                        st.markdown("---")
-                        st.subheader("💰 Sales Opportunity Detected!")
-
-                        # Priority badge
-                        priority_colors = {
-                            "High": "#dc3545",
-                            "Medium": "#ffc107",
-                            "Low": "#28a745"
-                        }
-                        priority_color = priority_colors.get(sales_opportunity["priority"], "#6c757d")
-
-                        st.markdown(f"""
-                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 0.5rem; color: white;">
-                            <h3 style="margin: 0; color: white;">🎯 {sales_opportunity["opportunity_type"]}</h3>
-                            <p style="margin: 0.5rem 0 0 0; font-size: 1.1rem; opacity: 0.9;">Potential Revenue: <strong>${sales_opportunity["potential_revenue"]:,}/year</strong></p>
-                            <span style="background-color: {priority_color}; padding: 0.25rem 0.75rem; border-radius: 1rem; font-size: 0.9rem; font-weight: bold;">{sales_opportunity["priority"]} Priority</span>
-                            <span style="margin-left: 0.5rem; opacity: 0.8;">Confidence: {sales_opportunity["confidence"]}%</span>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                        col1, col2 = st.columns(2)
-
+                        col1, col2, col3, col4 = st.columns(4)
                         with col1:
-                            st.markdown("**🔍 Signals Detected:**")
-                            for signal in sales_opportunity["signals"][:5]:
-                                st.markdown(f"- {signal['type']}: _{signal['keyword']}_")
+                            sentiment_label = sentiment.get("label", "Neutral")
+                            sentiment_score = sentiment.get("score", 0)
+
+                            # Color-coded sentiment badge
+                            if sentiment_score > 20:
+                                st.success(f"🟢 {sentiment_label} (+{sentiment_score})")
+                            elif sentiment_score < -20:
+                                st.error(f"🔴 {sentiment_label} ({sentiment_score})")
+                            else:
+                                st.info(f"🟡 {sentiment_label} ({sentiment_score})")
 
                         with col2:
-                            st.markdown("**📞 Recommended Action:**")
-                            st.markdown(f"> {sales_opportunity['recommended_action']}")
+                            urgency = sentiment.get("urgency_level", "Medium")
+                            urgency_icons = {
+                                "Critical": "⚡",
+                                "High": "🔥",
+                                "Medium": "⚠️",
+                                "Low": "📋"
+                            }
+                            icon = urgency_icons.get(urgency, "📋")
+                            if urgency in ["Critical", "High"]:
+                                st.warning(f"{icon} Urgency: {urgency}")
+                            else:
+                                st.metric("Urgency", f"{icon} {urgency}")
 
-                        if sales_opportunity.get("talking_points"):
-                            st.markdown("**💬 Talking Points for Sales Team:**")
-                            for point in sales_opportunity["talking_points"]:
-                                st.markdown(f"- {point}")
+                        with col3:
+                            escalation_risk = sentiment.get("escalation_risk", "Low")
+                            if escalation_risk in ["High", "Critical"]:
+                                st.error(f"⚠️ Risk: {escalation_risk}")
+                            elif escalation_risk == "Medium":
+                                st.warning(f"⚠️ Risk: {escalation_risk}")
+                            else:
+                                st.success(f"✅ Risk: {escalation_risk}")
 
-                        if sales_opportunity.get("next_steps"):
-                            st.markdown("**✅ Next Steps:**")
-                            for step in sales_opportunity["next_steps"]:
-                                st.markdown(f"1. {step}")
+                        with col4:
+                            flags = sentiment.get("flags", [])
+                            if flags:
+                                st.metric("Flags", len(flags))
+                            else:
+                                st.metric("Flags", "None")
 
-                    # ============================================================
-                    # TIER 1 AUTOMATED RESOLUTION
-                    # ============================================================
+                        # Show flags and recommendations if present
+                        if flags:
+                            with st.expander("🚩 Alert Flags", expanded=True):
+                                for flag in flags:
+                                    if "CRITICAL" in flag:
+                                        st.error(f"• {flag}")
+                                    elif "HIGH" in flag or "EXECUTIVE" in flag:
+                                        st.warning(f"• {flag}")
+                                    else:
+                                        st.info(f"• {flag}")
+
+                        recommendations = sentiment.get("recommendations", [])
+                        if recommendations:
+                            with st.expander("💡 Recommended Actions"):
+                                for rec in recommendations:
+                                    st.markdown(f"• {rec}")
+
+                    # Entities (additional context)
+                    if entities:
+                        with st.expander("🔍 Extracted Entities & Context"):
+                            st.json(entities)
+
+                    # Suggested response
+                    if suggested_response:
+                        with st.expander("💬 AI Suggested Response"):
+                            st.markdown(suggested_response)
+
+                    # ========== STEP 2: KB SEARCH & RESOLUTION ==========
                     st.markdown("---")
-                    st.subheader("⚡ Tier 1 Automated Resolution")
+                    st.subheader("🎯 Step 2: Resolution from Knowledge Base")
 
-                    # Check if ticket can be automated
-                    can_automate, reason = st.session_state.automation_engine.can_automate(
-                        classification, result.get("entities", {})
-                    )
+                    if st.session_state.kb_ready:
+                        with st.spinner("Searching Knowledge Base for relevant solutions..."):
+                            # Search KB using classification
+                            kb_results = st.session_state.kb.search_articles(
+                                query=ticket_text,
+                                classification=classification
+                            )
 
-                    if can_automate:
-                        st.success(f"✅ This ticket qualifies for full automation!")
-                        st.info(f"**Reason:** {reason}")
+                            if kb_results:
+                                # Check if confidence is low (KB gap detected)
+                                best_confidence = kb_results[0]['confidence'] if kb_results else 0
+                                if best_confidence < 50:
+                                    st.warning(f"🔍 **KB Coverage Gap Detected!** Best match confidence is only {best_confidence}%. This ticket type may need a new KB article.")
 
-                        # Automation button
-                        if st.button("🚀 Execute Automated Resolution", type="primary", key="automate_btn"):
-                            with st.spinner("🤖 Running automated workflow..."):
-                                automation_result = st.session_state.automation_engine.execute_automation(
-                                    classification,
-                                    result.get("entities", {}),
-                                    st.session_state.current_ticket_data
-                                )
+                                st.success(f"✅ Found {len(kb_results)} relevant KB articles")
 
-                                if automation_result["success"]:
-                                    st.success(f"🎉 Automation completed in {automation_result['execution_time']}s")
+                                # Show top 3 results
+                                st.markdown("**Top Matching Articles:**")
+                                for i, result in enumerate(kb_results[:3], 1):
+                                    article = result['article']
+                                    confidence = result['confidence']
+                                    col1, col2 = st.columns([3, 1])
+                                    with col1:
+                                        st.markdown(f"{i}. **{article.get('title', 'Untitled')}**")
+                                    with col2:
+                                        st.markdown(f"*Confidence: {confidence}%*")
 
-                                    # Display execution log
-                                    st.markdown("### 📋 Execution Log")
-                                    log_html = '<div style="background-color: #1e1e1e; color: #d4d4d4; padding: 1rem; border-radius: 0.5rem; font-family: monospace; font-size: 0.85rem; max-height: 400px; overflow-y: auto;">'
+                                st.markdown("---")
 
-                                    for entry in automation_result["execution_log"]:
-                                        level = entry["level"]
-                                        message = entry["message"]
-                                        timestamp = entry["timestamp"]
+                                # Use AI to analyze and select best article
+                                with st.spinner("AI is analyzing the best solution for this ticket..."):
+                                    try:
+                                        # Prepare context for AI
+                                        top_articles = kb_results[:3]
+                                        articles_context = "\n\n".join([
+                                            f"Article {i+1} (Confidence: {art['confidence']}%):\n"
+                                            f"Title: {art['article'].get('title')}\n"
+                                            f"Problem: {art['article'].get('problem')}\n"
+                                            f"Solution: {art['article'].get('solution')}\n"
+                                            f"Steps: {json.dumps(art['article'].get('steps', []))}"
+                                            for i, art in enumerate(top_articles)
+                                        ])
 
-                                        if level == "header":
-                                            log_html += f'<div style="color: #4ec9b0; font-weight: bold; margin: 0.5rem 0;">{timestamp} | {message}</div>'
-                                        elif level == "step":
-                                            log_html += f'<div style="color: #569cd6; font-weight: bold; margin: 0.5rem 0;">{timestamp} | {message}</div>'
-                                        elif level == "success":
-                                            log_html += f'<div style="color: #4ec9b0; margin: 0.25rem 0 0.25rem 1rem;">{timestamp} | {message}</div>'
-                                        elif level == "warning":
-                                            log_html += f'<div style="color: #ce9178; margin: 0.25rem 0 0.25rem 1rem;">{timestamp} | {message}</div>'
-                                        elif level == "error":
-                                            log_html += f'<div style="color: #f48771; margin: 0.25rem 0 0.25rem 1rem;">{timestamp} | {message}</div>'
-                                        elif level == "info":
-                                            log_html += f'<div style="color: #9cdcfe; margin: 0.25rem 0 0.25rem 1rem;">{timestamp} | {message}</div>'
-                                        elif level == "spacer":
-                                            log_html += '<div style="margin: 0.5rem 0;"></div>'
+                                        # AI prompt to select and adapt solution
+                                        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+                                        ai_prompt = f"""You are a support agent AI assistant. Select the KB article and adapt its steps to this specific ticket.
 
-                                    log_html += '</div>'
-                                    st.markdown(log_html, unsafe_allow_html=True)
+    Ticket:
+    - Category: {classification.get('category')}
+    - Dealer: {classification.get('dealer_name')}
+    - Syndicator: {classification.get('syndicator')}
+    - Provider: {classification.get('provider')}
 
-                                    # Display emails sent
-                                    if automation_result["emails_sent"]:
-                                        st.markdown("### ✉️ Emails Sent")
-                                        for i, email in enumerate(automation_result["emails_sent"]):
-                                            with st.expander(f"📧 {email['type'].replace('_', ' ').title()} - {email['to']} ({email['timestamp']})"):
-                                                st.markdown(f"**To:** {email['to']}")
-                                                st.markdown(f"**Subject:** {email['subject']}")
-                                                st.markdown("**Body:**")
-                                                st.text(email['body'])
+    Content: {ticket_text}
 
-                                    # Display internal comments
-                                    if automation_result["internal_comments"]:
-                                        st.markdown("### 💬 Internal Comments")
-                                        for comment in automation_result["internal_comments"]:
-                                            st.markdown(f"""
-                                            <div style="background-color: #fff3cd; padding: 1rem; border-radius: 0.5rem; border-left: 4px solid #ffc107; margin: 0.5rem 0;">
-                                                <strong>{' '.join(comment['tagged_users'])}</strong> ({comment['timestamp']})<br/>
-                                                <pre style="white-space: pre-wrap; margin: 0.5rem 0 0 0;">{comment['comment']}</pre>
-                                            </div>
-                                            """, unsafe_allow_html=True)
+    KB Articles:
+    {articles_context}
 
-                                    # Display feed configuration
-                                    if automation_result.get("feed_configured"):
-                                        feed = automation_result["feed_configured"]
-                                        st.markdown("### 🔧 Feed Configuration")
-                                        col1, col2 = st.columns(2)
+    CRITICAL INSTRUCTIONS:
+    1. Select the best matching KB article
+    2. USE THE KB ARTICLE'S STEPS AS-IS, only replace placeholders with actual values from the ticket
+    3. DO NOT add edge cases unless the ticket explicitly mentions a complication
+    4. DO NOT add warnings about credentials, access, or obvious things
+    5. Keep it simple - trust the KB steps
+
+    For example, if KB says "Visit client page", adapt it to "Visit Dealership_3 page" (using actual dealer name).
+
+    Return JSON:
+    {{
+      "selected_article_id": <1-3>,
+      "confidence": <80-100 for clear matches>,
+      "edge_cases_detected": [],
+      "resolution_steps": ["KB step adapted to this ticket", ...],
+      "additional_notes": "",
+      "reasoning": "Matches the ticket type"
+    }}
+    """
+
+                                        response = client.responses.create(
+                                            model=os.getenv("OPENAI_MODEL", "gpt-5-mini"),
+                                            input=ai_prompt,
+                                            reasoning={"effort": os.getenv("OPENAI_REASONING_EFFORT", "low")}
+                                        )
+
+                                        ai_analysis = json.loads(response.output_text)
+
+                                        # Display AI analysis
+                                        st.success("✅ AI Analysis Complete!")
+
+                                        # Show selected article
+                                        selected_idx = ai_analysis.get("selected_article_id", 1) - 1
+                                        if selected_idx >= 0 and selected_idx < len(top_articles):
+                                            selected_article = top_articles[selected_idx]['article']
+                                            st.info(f"**Selected Solution:** {selected_article.get('title')}")
+
+                                        # Show confidence
+                                        confidence = ai_analysis.get("confidence", 0)
+                                        confidence_color = "🟢" if confidence >= 80 else "🟡" if confidence >= 60 else "🔴"
+                                        st.metric("AI Confidence", f"{confidence_color} {confidence}%")
+
+                                        # Show edge cases if detected
+                                        edge_cases = ai_analysis.get("edge_cases_detected", [])
+                                        if edge_cases:
+                                            st.warning("⚠️ **Edge Cases Detected:**")
+                                            for edge_case in edge_cases:
+                                                st.markdown(f"- {edge_case}")
+
+                                        # Show resolution steps
+                                        st.markdown("### 📋 Resolution Steps for Agent")
+                                        resolution_steps = ai_analysis.get("resolution_steps", [])
+                                        for i, step in enumerate(resolution_steps, 1):
+                                            st.markdown(f"**{i}.** {step}")
+
+                                        # Show additional notes
+                                        notes = ai_analysis.get("additional_notes", "")
+                                        if notes:
+                                            st.info(f"**💡 Note:** {notes}")
+
+                                        # Show reasoning in expander
+                                        reasoning = ai_analysis.get("reasoning", "")
+                                        if reasoning:
+                                            with st.expander("🧠 AI Reasoning"):
+                                                st.markdown(reasoning)
+
+                                        # Quick feedback: Thumbs Up/Down
+                                        st.markdown("---")
+                                        st.markdown("**Quick Feedback: Was this KB article helpful?**")
+                                        col1, col2, col3 = st.columns([1, 1, 4])
+
+                                        # Get the actual article ID from the selected index
+                                        selected_index = ai_analysis.get("selected_article_id", 1) - 1  # Convert to 0-based index
+                                        selected_article_id = None
+                                        if 0 <= selected_index < len(top_articles):
+                                            selected_article_id = top_articles[selected_index]['article'].get('id')
                                         with col1:
-                                            st.metric("Feed ID", feed['feed_id'])
-                                            st.metric("Feed Type", feed['feed_type'].title())
-                                            st.metric("Inventory Type", feed['inventory_type'])
+                                            if st.button("👍 Helpful", key=f"upvote_{selected_article_id}", use_container_width=True):
+                                                if st.session_state.kb.vote_article(selected_article_id, 'up'):
+                                                    st.success("Thanks for the feedback!")
+                                                    st.rerun()
+
                                         with col2:
-                                            st.metric("Status", feed['status'])
-                                            st.metric("Dealer ID", feed['dealer_id'])
-                                            st.markdown(f"**Feed URL:** `{feed['feed_url']}`")
+                                            if st.button("👎 Not Helpful", key=f"downvote_{selected_article_id}", use_container_width=True):
+                                                if st.session_state.kb.vote_article(selected_article_id, 'down'):
+                                                    st.info("Feedback recorded. Please provide details in Step 3 below.")
+                                                    st.rerun()
 
-                                else:
-                                    st.error(f"❌ Automation failed: {automation_result.get('error')}")
+                                        # Show current vote score
+                                        article = st.session_state.kb.get_article(selected_article_id)
+                                        if article:
+                                            upvotes = article.get('upvotes', 0)
+                                            downvotes = article.get('downvotes', 0)
+                                            vote_score = article.get('vote_score', 0)
+                                            if upvotes + downvotes > 0:
+                                                with col3:
+                                                    st.caption(f"📊 Score: {vote_score} ({upvotes}👍 / {downvotes}👎)")
 
+                                        # Get the actual article ID from the selected index
+                                        selected_index = ai_analysis.get("selected_article_id", 1) - 1  # Convert to 0-based index
+                                        actual_article_id = None
+                                        if 0 <= selected_index < len(top_articles):
+                                            actual_article_id = top_articles[selected_index]['article'].get('id')
+
+                                        # Cache resolution data for Step 3
+                                        st.session_state.current_resolution = {
+                                            "steps": resolution_steps,
+                                            "selected_article_id": actual_article_id,
+                                            "confidence": confidence
+                                        }
+                                        st.session_state.current_ticket_data = {
+                                            "text": ticket_text,
+                                            "subject": ticket_subject,
+                                            "classification": classification
+                                        }
+                                        st.session_state.kb_results_cache = kb_results
+
+                                    except Exception as e:
+                                        st.error(f"❌ AI analysis failed: {str(e)}")
+                                        # Fallback: show first article's steps
+                                        st.warning("Showing fallback solution from top KB article:")
+                                        best_article = kb_results[0]['article']
+                                        st.markdown(f"**{best_article.get('title')}**")
+                                        st.markdown(f"**Problem:** {best_article.get('problem')}")
+                                        st.markdown(f"**Solution:** {best_article.get('solution')}")
+                                        st.markdown("**Steps:**")
+                                        for i, step in enumerate(best_article.get('steps', []), 1):
+                                            st.markdown(f"{i}. {step}")
+                            else:
+                                st.warning("⚠️ No matching KB articles found. This may require manual handling.")
+                                st.info("💡 This ticket might be a new type of issue that should be added to the KB after resolution.")
                     else:
-                        st.warning(f"⚠️ This ticket cannot be fully automated")
-                        st.info(f"**Reason:** {reason}")
-                        st.caption("Manual intervention required - ticket will be routed to appropriate team")
-
-                    # Show JSON
-                    with st.expander("🔍 View Classification JSON"):
-                        st.json(classification)
-
-                    # Show extracted entities (for debugging/transparency)
-                    if result.get("entities"):
-                        with st.expander("🤖 View Extracted Entities (AI Phase)"):
-                            st.json(result["entities"])
+                        st.error(f"⚠️ Knowledge Base not ready: {st.session_state.get('kb_error', 'Unknown error')}")
 
                 else:
-                    st.error(f"❌ Classification failed: {result.get('error')}")
+                    st.error(f"❌ Classification failed: {result.get('error', 'Unknown error')}")
 
-with tab2:
-    st.header("📋 Sample Tickets")
-    st.markdown("These are realistic example tickets from our automotive support system.")
-
-    if st.session_state.mock_tickets:
-        for ticket in st.session_state.mock_tickets:
-            with st.expander(f"🎫 {ticket['ticket_id']} - {ticket['subject']}"):
-                st.markdown(f"**Status:** {ticket['status']}")
-                st.markdown(f"**Created:** {ticket['created_time']}")
-                st.markdown("**Description:**")
-                st.text(ticket['description'])
-
-                if ticket.get('threads'):
-                    st.markdown("**Threads:**")
-                    for thread in ticket['threads']:
-                        st.markdown(f"- **{thread['author_name']}:** {thread['content']}")
-    else:
-        st.warning("No sample tickets loaded")
-
-with tab3:
-    st.header("💰 Revenue Impact Dashboard")
-    st.markdown("**Real-time financial metrics showing the monetary value of AI-powered ticket automation.**")
-
-    # Load revenue data
-    with open("data/dealer_revenue.json", "r") as f:
-        revenue_data = json.load(f)
-
-    # Initialize health engine if needed
-    if "health_engine" not in st.session_state:
-        st.session_state.health_engine = ClientHealthEngine()
-
-    # Calculate portfolio-wide metrics
-    total_arr = sum(dealer["arr"] for dealer in revenue_data.values())
-
-    # Calculate churn-related revenue at risk
-    revenue_at_risk_churn = 0
-    for dealer_id, dealer_info in revenue_data.items():
-        health = st.session_state.health_engine.calculate_health_score(dealer_id)
-        churn_data = st.session_state.health_engine.predict_churn_risk(
-            dealer_id, dealer_info["dealer_name"], dealer_info["arr"]
-        )
-        revenue_at_risk_churn += churn_data["revenue_at_risk"]
-
-    # Automation cost savings calculations
-    # Industry benchmarks:
-    # - Manual ticket handling: $25/ticket (30 min @ $50/hr)
-    # - Tier 1 (fully automated): $0/ticket
-    # - Tier 2 (semi-automated): $10/ticket (12 min @ $50/hr)
-    # - Tier 3 (urgent/manual): $25/ticket
-
-    if st.session_state.classifications:
-        tier_counts = {
-            "Tier 1": len([c for c in st.session_state.classifications if c['classification'].get('tier') == 'Tier 1']),
-            "Tier 2": len([c for c in st.session_state.classifications if c['classification'].get('tier') == 'Tier 2']),
-            "Tier 3": len([c for c in st.session_state.classifications if c['classification'].get('tier') == 'Tier 3'])
-        }
-
-        # Calculate cost savings from automation
-        tier1_savings = tier_counts["Tier 1"] * 25  # Full automation saves $25/ticket
-        tier2_savings = tier_counts["Tier 2"] * 15  # Partial automation saves $15/ticket
-        total_automation_savings = tier1_savings + tier2_savings
-
-        # Project annual savings (assuming current demo rate extrapolates)
-        # For demo: assume 5 tickets/day * 365 days = 1,825 tickets/year
-        # Tier 1 automation rate
-        total_classified = len(st.session_state.classifications)
-        tier1_rate = tier_counts["Tier 1"] / total_classified if total_classified > 0 else 0
-        tier2_rate = tier_counts["Tier 2"] / total_classified if total_classified > 0 else 0
-
-        annual_tickets = 1825  # Conservative estimate
-        annual_tier1_savings = annual_tickets * tier1_rate * 25
-        annual_tier2_savings = annual_tickets * tier2_rate * 15
-        projected_annual_savings = annual_tier1_savings + annual_tier2_savings
-
-        # Time saved calculations
-        tier1_time_saved = tier_counts["Tier 1"] * 30  # 30 min saved per Tier 1 ticket
-        tier2_time_saved = tier_counts["Tier 2"] * 18  # 18 min saved per Tier 2 ticket
-        total_time_saved_minutes = tier1_time_saved + tier2_time_saved
-        total_time_saved_hours = total_time_saved_minutes / 60
-    else:
-        tier_counts = {"Tier 1": 0, "Tier 2": 0, "Tier 3": 0}
-        total_automation_savings = 0
-        projected_annual_savings = 0
-        total_time_saved_hours = 0
-        tier1_rate = 0
-
-    # Revenue protected by preventing churn
-    revenue_protected = revenue_at_risk_churn  # Revenue we can save through proactive intervention
-
-    # ============================================================
-    # TOP-LINE METRICS
-    # ============================================================
-    st.markdown("### 🎯 Key Financial Metrics")
-
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric(
-            "Total Portfolio ARR",
-            f"${total_arr:,}",
-            help="Total Annual Recurring Revenue across all dealers"
-        )
-
-    with col2:
-        st.metric(
-            "Revenue at Risk",
-            f"${int(revenue_at_risk_churn):,}",
-            delta=f"-{int(revenue_at_risk_churn/total_arr*100)}% of ARR",
-            delta_color="inverse",
-            help="Revenue at risk from predicted churn"
-        )
-
-    with col3:
-        st.metric(
-            "Automation Savings (Demo)",
-            f"${int(total_automation_savings):,}",
-            delta=f"{tier1_rate*100:.0f}% Tier 1 rate",
-            help="Cost savings from automated ticket handling in this demo session"
-        )
-
-    with col4:
-        st.metric(
-            "Projected Annual Savings",
-            f"${int(projected_annual_savings):,}",
-            delta=f"{int(total_time_saved_hours)}h saved",
-            help="Estimated annual cost savings from automation"
-        )
-
-    # ============================================================
-    # REVENUE PROTECTION BREAKDOWN
-    # ============================================================
+    # ========== STEP 3: FEEDBACK & KB LEARNING ==========
+    # This is OUTSIDE the classify_button block so form submissions work
     st.markdown("---")
-    st.markdown("### 💵 Revenue Protection Analysis")
+    st.subheader("🎓 Step 3: KB Learning & Feedback")
 
-    col1, col2 = st.columns(2)
+    st.write(f"DEBUG: current_ticket_data exists = {st.session_state.current_ticket_data is not None}")
 
-    with col1:
-        st.markdown("#### Churn Prevention Impact")
-        st.markdown(f"""
-        Our AI system identifies at-risk clients before they churn, enabling proactive intervention.
+    if st.session_state.current_ticket_data:
+        # Use a form to prevent reruns
+        with st.form(key="feedback_form", clear_on_submit=False):
+            st.markdown("**Did the suggested resolution work?**")
+            resolution_failed = st.checkbox("❌ Resolution did not work")
 
-        **Current Status:**
-        - Total Revenue at Risk: **${int(revenue_at_risk_churn):,}**
-        - Potential Revenue Protected: **${int(revenue_at_risk_churn * 0.7):,}** (70% save rate)
-        - Average intervention cost: **$500/client**
-        - Net revenue protected: **${int(revenue_at_risk_churn * 0.7 - 500 * 3):,}**
-
-        **ROI on Churn Prevention:** {int((revenue_at_risk_churn * 0.7 - 1500) / 1500 * 100)}x return
-        """)
-
-    with col2:
-        st.markdown("#### Automation Efficiency Impact")
-        st.markdown(f"""
-        Intelligent ticket routing and automation reduces operational costs significantly.
-
-        **Current Session:**
-        - Tier 1 (Fully Automated): **{tier_counts['Tier 1']} tickets** → ${tier_counts['Tier 1'] * 25:,} saved
-        - Tier 2 (Semi-Automated): **{tier_counts['Tier 2']} tickets** → ${tier_counts['Tier 2'] * 15:,} saved
-        - Total time saved: **{int(total_time_saved_hours)} hours**
-
-        **Annual Projection:**
-        - Estimated annual savings: **${int(projected_annual_savings):,}**
-        - FTE time saved: **{int(total_time_saved_hours * 365 / 2080)} positions** (at 2080h/year)
-        """)
-
-    # ============================================================
-    # UPSELL OPPORTUNITIES
-    # ============================================================
-    st.markdown("---")
-    st.markdown("### 🎯 AI Upsell Intelligence")
-
-    # Initialize upsell engine
-    if "upsell_engine" not in st.session_state:
-        st.session_state.upsell_engine = UpsellIntelligence()
-
-    # Get ticket histories from health engine
-    if "health_engine" in st.session_state:
-        # Get all historical data from health engine
-        all_histories = st.session_state.health_engine._generate_mock_history()
-        ticket_histories = {dealer_id: all_histories.get(dealer_id, []) for dealer_id in revenue_data.keys()}
-
-        # Analyze portfolio for upsell opportunities
-        upsell_summary = st.session_state.upsell_engine.get_portfolio_upsell_summary(
-            revenue_data,
-            ticket_histories
-        )
-
-        # Display upsell metrics
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            st.metric(
-                "Total Upsell Opportunities",
-                upsell_summary["total_opportunities"],
-                delta=f"${int(upsell_summary['total_potential_revenue']):,} potential",
-                help="Number of dealers with identified upsell opportunities"
-            )
-
-        with col2:
-            high_priority = len(upsell_summary["high_priority"])
-            st.metric(
-                "High Priority Opportunities",
-                high_priority,
-                delta="Immediate action recommended",
-                delta_color="off",
-                help="High-confidence upsell opportunities"
-            )
-
-        with col3:
-            avg_upsell = upsell_summary['total_potential_revenue'] / upsell_summary['total_opportunities'] if upsell_summary['total_opportunities'] > 0 else 0
-            st.metric(
-                "Avg Upsell Value",
-                f"${int(avg_upsell):,}",
-                help="Average additional ARR per upsell opportunity"
-            )
-
-        # Display opportunities
-        if upsell_summary["total_opportunities"] > 0:
-            st.markdown("#### 💰 Top Upsell Opportunities")
-
-            for opp in upsell_summary["opportunities"][:5]:  # Top 5
-                priority_color = {
-                    "High": "#dc3545",
-                    "Medium": "#ffc107",
-                    "Low": "#28a745"
-                }.get(opp.get("priority", "Low"), "#6c757d")
-
-                with st.expander(
-                    f"**{opp['dealer_name']}** | {opp['current_package']} → {opp['recommended_package']} | "
-                    f"+${int(opp['revenue_increase']):,}/year",
-                    expanded=(opp.get("priority") == "High")
-                ):
-                    col1, col2 = st.columns([2, 1])
-
-                    with col1:
-                        st.markdown(f"""
-                        <div style="background-color: rgba(99, 102, 241, 0.05); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid {priority_color};">
-                            <p style="margin: 0;"><strong>Priority:</strong> <span style="color: {priority_color};">{opp.get('priority', 'Medium')}</span></p>
-                            <p style="margin: 0.5rem 0 0 0;"><strong>Confidence:</strong> {opp.get('confidence', 0)}%</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                        st.markdown("**Signals Detected:**")
-                        for signal in opp.get("signals_detected", []):
-                            signal_emoji = {"expansion": "🏢", "volume": "📈", "features": "⚙️", "growth": "🌱", "support_quality": "🆘"}.get(signal["category"], "💡")
-                            st.markdown(f"- {signal_emoji} {signal['category']}: _{signal['keyword']}_")
-
-                        st.markdown("**Reasoning:**")
-                        for reason in opp.get("reasoning", []):
-                            st.markdown(f"- {reason}")
-
-                    with col2:
-                        st.markdown(f"""
-                        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 0.5rem; text-align: center; color: white;">
-                            <h2 style="margin: 0; color: white;">${int(opp['revenue_increase']):,}</h2>
-                            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Additional ARR</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                        st.markdown(f"**Current:** ${int(opp['current_arr']):,}/year")
-                        st.markdown(f"**Potential:** ${int(opp['potential_arr']):,}/year")
-
-                    if opp.get("talking_points"):
-                        st.markdown("**💬 Talking Points for Sales:**")
-                        for point in opp["talking_points"]:
-                            st.markdown(f"> {point}")
-
-        else:
-            st.info("💡 No upsell opportunities detected. All dealers are on optimal packages for their current usage patterns.")
-
-    # ============================================================
-    # SALES OPPORTUNITIES FROM TICKETS
-    # ============================================================
-    st.markdown("---")
-    st.markdown("### 🎯 Active Sales Opportunities from Tickets")
-
-    if st.session_state.sales_opportunities:
-        # Get portfolio summary
-        if "sales_engine" not in st.session_state:
-            st.session_state.sales_engine = SalesIntelligence()
-
-        sales_summary = st.session_state.sales_engine.get_portfolio_opportunities(
-            st.session_state.sales_opportunities
-        )
-
-        # Display metrics
-        col1, col2, col3 = st.columns(3)
-
-        with col1:
-            st.metric(
-                "Sales Opps Detected",
-                sales_summary["total_opportunities"],
-                help="Revenue opportunities identified from support tickets"
-            )
-
-        with col2:
-            st.metric(
-                "Total Potential Revenue",
-                f"${int(sales_summary['total_potential_revenue']):,}",
-                help="Combined potential revenue from all detected opportunities"
-            )
-
-        with col3:
-            high_priority = len(sales_summary["high_priority"])
-            st.metric(
-                "High Priority",
-                high_priority,
-                delta="Action required",
-                delta_color="off",
-                help="High-confidence opportunities requiring immediate follow-up"
-            )
-
-        # Display top opportunities
-        if sales_summary["total_opportunities"] > 0:
-            st.markdown("#### 💎 Top Sales Opportunities")
-
-            for opp in sales_summary["opportunities"][:5]:  # Top 5
-                priority_color = {
-                    "High": "#dc3545",
-                    "Medium": "#ffc107",
-                    "Low": "#28a745"
-                }.get(opp.get("priority", "Low"), "#6c757d")
-
-                with st.expander(
-                    f"**{opp['dealer_name']}** | {opp['opportunity_type']} | +${int(opp['potential_revenue']):,}/year",
-                    expanded=(opp.get("priority") == "High")
-                ):
-                    col1, col2 = st.columns([2, 1])
-
-                    with col1:
-                        st.markdown(f"""
-                        <div style="background-color: rgba(103, 126, 234, 0.05); padding: 1rem; border-radius: 0.5rem; border-left: 4px solid {priority_color};">
-                            <p style="margin: 0;"><strong>Type:</strong> {opp['opportunity_type']}</p>
-                            <p style="margin: 0.5rem 0 0 0;"><strong>Priority:</strong> <span style="color: {priority_color};">{opp.get('priority', 'Medium')}</span></p>
-                            <p style="margin: 0.5rem 0 0 0;"><strong>Confidence:</strong> {opp.get('confidence', 0)}%</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                        st.markdown("**📝 Signals Detected:**")
-                        for signal in opp.get("signals", [])[:3]:
-                            st.markdown(f"- {signal['type']}: _{signal['keyword']}_")
-
-                        if opp.get("recommended_action"):
-                            st.markdown("**📞 Recommended Action:**")
-                            st.markdown(f"> {opp['recommended_action']}")
-
-                    with col2:
-                        st.markdown(f"""
-                        <div style="background: linear-gradient(135deg, #28a745 0%, #20c997 100%); padding: 1.5rem; border-radius: 0.5rem; text-align: center; color: white;">
-                            <h2 style="margin: 0; color: white;">${int(opp['potential_revenue']):,}</h2>
-                            <p style="margin: 0.5rem 0 0 0; opacity: 0.9;">Annual Revenue</p>
-                        </div>
-                        """, unsafe_allow_html=True)
-
-                    if opp.get("next_steps"):
-                        st.markdown("**✅ Next Steps:**")
-                        for i, step in enumerate(opp["next_steps"], 1):
-                            st.markdown(f"{i}. {step}")
-    else:
-        st.info("💡 No sales opportunities detected yet. Classify tickets to identify revenue opportunities from customer conversations.")
-
-    # ============================================================
-    # AUTOMATION BREAKDOWN
-    # ============================================================
-    st.markdown("---")
-    st.markdown("### ⚡ Automation Performance")
-
-    if st.session_state.classifications:
-        col1, col2, col3 = st.columns(3)
-
-        total = sum(tier_counts.values())
-
-        with col1:
-            st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 1.5rem; border-radius: 0.5rem; text-align: center;">
-                <h1 style="color: white; margin: 0;">{tier_counts['Tier 1']}</h1>
-                <p style="color: white; margin: 0.5rem 0 0 0;">Tier 1 - Fully Automated</p>
-                <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 0.9rem;">{tier_counts['Tier 1']/total*100:.0f}% of tickets</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with col2:
-            st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 1.5rem; border-radius: 0.5rem; text-align: center;">
-                <h1 style="color: white; margin: 0;">{tier_counts['Tier 2']}</h1>
-                <p style="color: white; margin: 0.5rem 0 0 0;">Tier 2 - Semi-Automated</p>
-                <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 0.9rem;">{tier_counts['Tier 2']/total*100:.0f}% of tickets</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        with col3:
-            st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #fa709a 0%, #fee140 100%); padding: 1.5rem; border-radius: 0.5rem; text-align: center;">
-                <h1 style="color: white; margin: 0;">{tier_counts['Tier 3']}</h1>
-                <p style="color: white; margin: 0.5rem 0 0 0;">Tier 3 - Manual (Urgent)</p>
-                <p style="color: rgba(255,255,255,0.8); margin: 0; font-size: 0.9rem;">{tier_counts['Tier 3']/total*100:.0f}% of tickets</p>
-            </div>
-            """, unsafe_allow_html=True)
-
-        # Category breakdown
-        st.markdown("---")
-        st.markdown("### 📊 Classification Breakdown")
-
-        categories = [c['classification'].get('category') for c in st.session_state.classifications if c['classification'].get('category')]
-        category_counts = {}
-        for cat in categories:
-            category_counts[cat] = category_counts.get(cat, 0) + 1
-
-        if category_counts:
-            col1, col2 = st.columns([2, 1])
-
-            with col1:
-                for category, count in sorted(category_counts.items(), key=lambda x: x[1], reverse=True):
-                    percentage = count / len(categories) * 100
-                    st.markdown(f"""
-                    <div style="background-color: rgba(99, 102, 241, 0.1); padding: 0.75rem; border-radius: 0.25rem; margin: 0.5rem 0;">
-                        <strong>{category}</strong>: {count} tickets ({percentage:.0f}%)
-                        <div style="background-color: rgba(99, 102, 241, 0.3); height: 8px; border-radius: 4px; margin-top: 0.5rem;">
-                            <div style="background-color: #6366f1; height: 8px; border-radius: 4px; width: {percentage}%;"></div>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
-
-            with col2:
-                st.metric("Total Tickets", len(st.session_state.classifications))
-                dealers = [c['classification'].get('dealer_name') for c in st.session_state.classifications if c['classification'].get('dealer_name')]
-                st.metric("Unique Dealers", len(set(dealers)))
-                st.metric("Avg per Dealer", f"{len(categories)/len(set(dealers)):.1f}" if dealers else "0")
-
-        # Recent classifications
-        st.markdown("---")
-        st.markdown("### 🕐 Recent Classifications")
-
-        for i, item in enumerate(reversed(st.session_state.classifications[-5:])):
-            with st.expander(f"#{len(st.session_state.classifications) - i}: {item['classification'].get('category', 'Unknown')} - {item['classification'].get('dealer_name', 'Unknown Dealer')}"):
-                st.markdown(f"**Subject:** {item['subject']}")
-                st.markdown(f"**Timestamp:** {item['timestamp']}")
-                st.markdown(f"**Tier:** {item['classification'].get('tier', 'N/A')}")
-                st.json(item['classification'])
-    else:
-        st.info("💡 No tickets classified yet. Start classifying tickets to see revenue impact metrics!")
-
-# ============================================================
-# TAB 4: CLIENT HEALTH & CHURN PREDICTION
-# ============================================================
-with tab4:
-    st.header("💚 Client Health Dashboard")
-    st.markdown("""
-    **Predictive analytics to prevent churn and protect revenue.**
-
-    The system analyzes ticket patterns across all clients to calculate health scores (0-100) and predict churn risk.
-    This enables **proactive intervention** before clients leave.
-    """)
-
-    # Initialize health engine
-    if "health_engine" not in st.session_state:
-        st.session_state.health_engine = ClientHealthEngine()
-
-    # Load revenue data
-    try:
-        with open("data/dealer_revenue.json", "r") as f:
-            revenue_data = json.load(f)
-    except:
-        revenue_data = {}
-
-    health_engine = st.session_state.health_engine
-
-    # Get all health scores
-    all_health = health_engine.get_all_health_scores()
-
-    # Calculate aggregate metrics
-    total_arr = sum(revenue_data.get(h["dealer_id"], {}).get("arr", 0) for h in all_health)
-    critical_clients = [h for h in all_health if h["score"] < 30]
-    at_risk_clients = [h for h in all_health if 30 <= h["score"] < 50]
-
-    # Calculate revenue at risk
-    revenue_at_risk = 0
-    for client in critical_clients + at_risk_clients:
-        dealer_id = client["dealer_id"]
-        arr = revenue_data.get(dealer_id, {}).get("arr", 0)
-        churn_data = health_engine.predict_churn_risk(dealer_id, client["dealer_name"], arr)
-        revenue_at_risk += churn_data["revenue_at_risk"]
-
-    # Top Metrics
-    st.markdown("### 📊 Key Metrics")
-    col1, col2, col3, col4 = st.columns(4)
-
-    with col1:
-        st.metric("Total ARR", f"${total_arr:,}")
-
-    with col2:
-        st.metric("Revenue at Risk", f"${int(revenue_at_risk):,}", delta=f"-{len(critical_clients + at_risk_clients)} clients", delta_color="inverse")
-
-    with col3:
-        st.metric("At Risk Clients", len(at_risk_clients), delta_color="inverse")
-
-    with col4:
-        st.metric("Critical Clients", len(critical_clients), delta_color="inverse")
-
-    st.markdown("---")
-
-    # Health Score Distribution
-    st.markdown("### 🎯 Client Health Scores")
-
-    # Create color-coded table
-    for health in all_health:
-        dealer_id = health["dealer_id"]
-        dealer_revenue = revenue_data.get(dealer_id, {})
-        arr = dealer_revenue.get("arr", 0)
-
-        # Calculate churn prediction
-        churn_data = health_engine.predict_churn_risk(dealer_id, health["dealer_name"], arr)
-
-        # Create expandable section for each dealer
-        with st.expander(f"**{health['dealer_name']}** | Score: {health['score']}/100 | Health: {health['category']} | ARR: ${arr:,}"):
-            col1, col2 = st.columns(2)
-
-            with col1:
-                st.markdown("#### 💚 Health Score")
-                st.markdown(f"""
-                <div style="background-color: {health['color']}; padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                    <h1 style="color: white; margin: 0;">{health['score']}/100</h1>
-                    <p style="color: white; margin: 0;"><strong>{health['category']}</strong></p>
-                </div>
-                """, unsafe_allow_html=True)
-
-                st.markdown(f"**Trend:** {health['trend'].capitalize()}")
-                st.markdown(f"**Tickets Analyzed:** {health['tickets_analyzed']} (last 30 days: {health['recent_tickets']})")
-                st.markdown(f"**Problems:** {health['problem_count']}")
-                st.markdown(f"**Urgent Issues:** {health['urgent_count']}")
-
-                # Show factors
-                if health['factors']:
-                    st.markdown("**Health Factors:**")
-                    for factor, impact in health['factors'].items():
-                        emoji = "📉" if impact < 0 else "📈"
-                        st.markdown(f"{emoji} {factor.replace('_', ' ').title()}: {impact:+d} points")
-
-            with col2:
-                st.markdown("#### 🚨 Churn Risk")
-                st.markdown(f"""
-                <div style="background-color: {churn_data['risk_color']}; padding: 1rem; border-radius: 0.5rem; text-align: center;">
-                    <h1 style="color: white; margin: 0;">{churn_data['churn_probability']}%</h1>
-                    <p style="color: white; margin: 0;"><strong>{churn_data['risk_level']}</strong></p>
-                </div>
-                """, unsafe_allow_html=True)
-
-                st.markdown(f"**Priority:** {churn_data['priority']}")
-                st.markdown(f"**Revenue at Risk:** ${int(churn_data['revenue_at_risk']):,}")
-
-                if churn_data['risk_factors']:
-                    st.markdown("**Risk Factors:**")
-                    for factor in churn_data['risk_factors']:
-                        st.markdown(f"⚠️ {factor}")
-
-            # Recommendations
             st.markdown("---")
-            st.markdown("#### 💡 Recommended Actions")
-            for i, rec in enumerate(health['recommendations'], 1):
-                st.markdown(f"{i}. {rec}")
+            st.markdown("**Provide Feedback (Optional)**")
+            st.caption("If the resolution didn't work, please tell us what actually worked:")
 
-            # Interventions for high-risk clients
-            if churn_data['churn_probability'] >= 40:
-                st.markdown("---")
-                st.markdown("#### 🎯 Intervention Strategy")
-                for i, intervention in enumerate(churn_data['interventions'], 1):
-                    st.markdown(f"{i}. {intervention}")
+            actual_solution = st.text_area(
+                "What was the actual solution?",
+                placeholder="e.g., Had to also restart the service after disabling the feed...",
+                height=100,
+                key="actual_solution_input"
+            )
 
-    # Summary insights
+            edge_case_desc = st.text_area(
+                "Any edge cases or special circumstances?",
+                placeholder="e.g., Client had custom integration that required additional steps...",
+                height=80,
+                key="edge_case_input"
+            )
+
+            submit_feedback = st.form_submit_button("📤 Submit Feedback", type="primary")
+
+        # Process form submission
+        if submit_feedback:
+            st.write(f"DEBUG: submit_feedback={submit_feedback}, resolution_failed={resolution_failed}, actual_solution length={len(actual_solution.strip())}")
+            if not resolution_failed:
+                # Resolution worked - record success
+                st.success("🎉 Great! This resolution is marked as successful.")
+                # Track success
+                if st.session_state.current_resolution and st.session_state.current_resolution.get("selected_article_id"):
+                    article_id = st.session_state.current_resolution["selected_article_id"]
+                    st.session_state.kb.record_usage(article_id, success=True)
+                    st.success(f"✅ Success recorded for KB article #{article_id}")
+
+                # Reset for next ticket
+                st.session_state.current_ticket_data = None
+                st.session_state.current_resolution = None
+                time.sleep(1)
+                st.rerun()
+
+            elif actual_solution.strip():
+                # Resolution failed - save feedback for audit
+                if st.session_state.feedback_manager_ready:
+                    # Prepare feedback data
+                    ticket_data = {
+                        "ticket_id": st.session_state.current_ticket_data.get("ticket_id", ""),
+                        "subject": st.session_state.current_ticket_data.get("subject", ""),
+                        "text": st.session_state.current_ticket_data["text"],
+                        "category": st.session_state.current_ticket_data["classification"].get("category"),
+                        "sub_category": st.session_state.current_ticket_data["classification"].get("sub_category"),
+                        "syndicator": st.session_state.current_ticket_data["classification"].get("syndicator"),
+                        "provider": st.session_state.current_ticket_data["classification"].get("provider"),
+                        "dealer_name": st.session_state.current_ticket_data["classification"].get("dealer_name")
+                    }
+
+                    matched_article_id = None
+                    if st.session_state.current_resolution and st.session_state.current_resolution.get("selected_article_id"):
+                        matched_article_id = st.session_state.current_resolution["selected_article_id"]
+
+                    agent_feedback = {
+                        "actual_solution": actual_solution,
+                        "edge_case": edge_case_desc,
+                        "agent_name": "Demo Agent"  # In production, get from auth
+                    }
+
+                    # Save to pending feedback
+                    feedback_id = st.session_state.feedback_manager.add_feedback(
+                        ticket_data=ticket_data,
+                        matched_article_id=matched_article_id,
+                        agent_feedback=agent_feedback,
+                        resolution_worked=False
+                    )
+
+                    st.success(f"📝 Feedback submitted! (ID: {feedback_id})")
+                    st.info("💡 Your feedback has been queued for KB audit. A supervisor will review and update the KB accordingly.")
+
+                    # Also record the failed usage if there was a matched article
+                    if matched_article_id:
+                        st.session_state.kb.record_usage(matched_article_id, success=False)
+
+                    # Reset session state for next ticket
+                    st.session_state.current_ticket_data = None
+                    st.session_state.current_resolution = None
+                    st.balloons()  # Visual celebration!
+                    time.sleep(2)  # Give user time to see success message
+                    st.rerun()  # Refresh to clear form
+                else:
+                    st.error(f"❌ Feedback system not available: {st.session_state.get('feedback_manager_error', 'Unknown error')}")
+                    st.info("Your feedback could not be saved. Please contact support.")
+
+            else:
+                st.warning("⚠️ Please describe the actual solution before submitting.")
+
+    # Footer
     st.markdown("---")
-    st.markdown("### 🔍 Key Insights")
+    st.caption("Powered by GPT-5-mini | Anthropic Claude Code")
 
-    if critical_clients:
-        st.error(f"🚨 **{len(critical_clients)} CRITICAL clients** require immediate attention!")
-        for client in critical_clients[:3]:  # Show top 3
-            dealer_id = client["dealer_id"]
-            arr = revenue_data.get(dealer_id, {}).get("arr", 0)
-            st.markdown(f"- **{client['dealer_name']}** (Score: {client['score']}/100, ARR: ${arr:,})")
 
-    if at_risk_clients:
-        st.warning(f"⚠️ **{len(at_risk_clients)} clients at risk** - proactive outreach recommended")
-
-    healthy_clients = [h for h in all_health if h["score"] >= 70]
-    if healthy_clients:
-        st.success(f"✅ **{len(healthy_clients)} healthy clients** - maintain current support level")
-
-# Footer
-st.markdown("---")
-st.markdown("""
-<div style='text-align: center; color: #666; font-size: 0.9rem;'>
-    🤖 Powered by GPT-5 | Built for Cars Commerce Hackathon Fall 2025
-</div>
-""", unsafe_allow_html=True)
+if __name__ == '__main__':
+    main()
