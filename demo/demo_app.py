@@ -30,14 +30,171 @@ except:
 
 def main():
     """Main function for the demo app"""
-    # Custom CSS
+    # Custom CSS - Zoho-like styling
     st.markdown("""
     <style>
-        .main {
-            padding: 1rem;
+        /* Zoho color palette */
+        :root {
+            --zoho-orange: #E65100;
+            --zoho-red: #D84315;
+            --zoho-blue: #1976D2;
+            --zoho-gray: #F5F5F5;
+            --zoho-border: #E0E0E0;
         }
+
+        /* Main layout */
+        .main {
+            background-color: #FAFAFA;
+            padding: 0;
+        }
+
+        /* Zoho-style header */
+        .zoho-header {
+            background: linear-gradient(135deg, #E65100 0%, #D84315 100%);
+            color: white;
+            padding: 1.5rem 2rem;
+            margin: -1rem -1rem 2rem -1rem;
+            border-bottom: 3px solid #BF360C;
+        }
+
+        .zoho-header h1 {
+            margin: 0;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .zoho-header p {
+            margin: 0.5rem 0 0 0;
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+
+        /* Zoho-style cards */
+        .zoho-card {
+            background: white;
+            border: 1px solid #E0E0E0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .zoho-card-header {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 1rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 2px solid #E65100;
+        }
+
+        /* Ticket status badges */
+        .ticket-badge {
+            display: inline-block;
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .badge-open {
+            background-color: #FFF3E0;
+            color: #E65100;
+            border: 1px solid #FFB74D;
+        }
+
+        .badge-pending {
+            background-color: #FFF9C4;
+            color: #F57C00;
+            border: 1px solid #FFD54F;
+        }
+
+        .badge-urgent {
+            background-color: #FFEBEE;
+            color: #D32F2F;
+            border: 1px solid #EF5350;
+        }
+
+        .badge-resolved {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+            border: 1px solid #66BB6A;
+        }
+
+        /* Zoho-style buttons */
         .stButton>button {
-            width: 100%;
+            background: linear-gradient(135deg, #E65100 0%, #D84315 100%);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            padding: 0.75rem 1.5rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(230, 81, 0, 0.3);
+        }
+
+        .stButton>button:hover {
+            background: linear-gradient(135deg, #D84315 0%, #BF360C 100%);
+            box-shadow: 0 4px 8px rgba(230, 81, 0, 0.4);
+            transform: translateY(-1px);
+        }
+
+        /* Zoho-style metrics */
+        div[data-testid="stMetricValue"] {
+            color: #E65100;
+            font-weight: 600;
+        }
+
+        /* Field labels */
+        .zoho-field-label {
+            color: #666;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Zoho-style sidebar */
+        section[data-testid="stSidebar"] {
+            background-color: #FAFAFA;
+            border-right: 1px solid #E0E0E0;
+        }
+
+        section[data-testid="stSidebar"] > div {
+            background-color: #FAFAFA;
+        }
+
+        /* Success/warning/error styling */
+        .stSuccess {
+            background-color: #E8F5E9;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .stWarning {
+            background-color: #FFF3E0;
+            border-left: 4px solid #E65100;
+        }
+
+        .stError {
+            background-color: #FFEBEE;
+            border-left: 4px solid #D32F2F;
+        }
+
+        /* Ticket info grid */
+        .ticket-info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .ticket-info-item {
+            background: #F5F5F5;
+            padding: 1rem;
+            border-radius: 6px;
+            border-left: 3px solid #E65100;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -88,9 +245,13 @@ def main():
     if "kb_results_cache" not in st.session_state:
         st.session_state.kb_results_cache = None
 
-    # Header
-    st.title("🎯 AI-Powered Ticket Classifier")
-    st.markdown("### Intelligent Support Ticket Classification")
+    # Zoho-style Header
+    st.markdown("""
+    <div class="zoho-header">
+        <h1>Zoho Desk - AI Agent Assistant</h1>
+        <p>Intelligent ticket classification and resolution powered by AI</p>
+    </div>
+    """, unsafe_allow_html=True)
 
     # Check if classifier is ready
     if not st.session_state.classifier_ready:
@@ -167,7 +328,11 @@ def main():
             pass
 
     # Main content
-    st.header("Classify a Support Ticket")
+    st.markdown("""
+    <div class="zoho-card-header">
+        📋 New Ticket - AI Classification & Resolution
+    </div>
+    """, unsafe_allow_html=True)
 
     # Proactive Pattern Detection Alerts
     try:
@@ -207,11 +372,12 @@ def main():
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        st.subheader("Ticket Input")
+        st.markdown('<div class="zoho-card">', unsafe_allow_html=True)
+        st.markdown("### Ticket Details")
 
         input_method = st.radio(
-            "Input Method:",
-            ["Direct Text Input", "Load Sample Ticket"],
+            "📥 Input Method",
+            ["New Ticket Entry", "Load Sample Ticket"],
             horizontal=True
         )
 
@@ -227,39 +393,46 @@ def main():
                     idx = int(selected.split(" - ")[0]) - 12345
                     if 0 <= idx < len(st.session_state.mock_tickets):
                         ticket = st.session_state.mock_tickets[idx]
-                        ticket_subject = st.text_input("Subject:", value=ticket["subject"])
+                        st.markdown('<span class="ticket-badge badge-open">OPEN</span> <span class="ticket-badge badge-pending">Awaiting Agent</span>', unsafe_allow_html=True)
+                        st.markdown("")  # Spacing
+                        ticket_subject = st.text_input("📧 Subject", value=ticket["subject"])
                         ticket_text = st.text_area(
-                            "Ticket Content:",
+                            "📝 Description",
                             value=ticket["description"],
                             height=200
                         )
                     else:
-                        ticket_subject = st.text_input("Subject:")
-                        ticket_text = st.text_area("Ticket Content:", height=200)
+                        ticket_subject = st.text_input("📧 Subject")
+                        ticket_text = st.text_area("📝 Description", height=200)
             else:
                 st.warning("No sample tickets available")
-                ticket_subject = st.text_input("Subject:")
-                ticket_text = st.text_area("Ticket Content:", height=200)
+                ticket_subject = st.text_input("📧 Subject")
+                ticket_text = st.text_area("📝 Description", height=200)
         else:
-            ticket_subject = st.text_input("Subject:")
+            st.markdown('<span class="ticket-badge badge-open">NEW TICKET</span> <span class="ticket-badge badge-pending">Classification Needed</span>', unsafe_allow_html=True)
+            st.markdown("")  # Spacing
+            ticket_subject = st.text_input("📧 Subject")
             ticket_text = st.text_area(
-                "Ticket Content:",
-                placeholder="Paste ticket content here...",
+                "📝 Description",
+                placeholder="Enter ticket description from customer...",
                 height=200
             )
 
-        classify_button = st.button("🚀 Classify with AI", type="primary")
+        classify_button = st.button("🚀 Analyze Ticket", type="primary")
+        st.markdown('</div>', unsafe_allow_html=True)  # Close zoho-card
 
     with col2:
-        st.subheader("GPT-5 Powered")
+        st.markdown('<div class="zoho-card">', unsafe_allow_html=True)
+        st.markdown("### 🤖 AI Assistant Info")
         st.info("""
-        This classifier uses **GPT-5-mini** to:
+        **Powered by GPT-5**
 
-        - Extract key information
-        - Classify tickets accurately
-        - Determine priority tiers
-        - Identify syndicators/providers
+        ✓ Auto-classification
+        ✓ Priority detection
+        ✓ Smart routing
+        ✓ KB resolution
         """)
+        st.markdown('</div>', unsafe_allow_html=True)  # Close zoho-card
 
     # Classification logic
     if classify_button:
@@ -277,9 +450,10 @@ def main():
                     suggested_response = result.get("suggested_response", "")
 
                     # Display classification results
-                    st.markdown("---")
-                    st.subheader("📋 Classification Results")
-                    st.markdown("**All 10 Extracted Fields:**")
+                    st.markdown('<div class="zoho-card">', unsafe_allow_html=True)
+                    st.markdown('<div class="zoho-card-header">🎯 Ticket Classification Results</div>', unsafe_allow_html=True)
+                    st.markdown('<span class="ticket-badge badge-resolved">AUTO-CLASSIFIED</span>', unsafe_allow_html=True)
+                    st.markdown("")  # Spacing
 
                     # Row 1: Main Classification
                     col1, col2, col3, col4 = st.columns(4)
@@ -386,9 +560,11 @@ def main():
                         with st.expander("💬 AI Suggested Response"):
                             st.markdown(suggested_response)
 
+                    st.markdown('</div>', unsafe_allow_html=True)  # Close classification card
+
                     # ========== STEP 2: KB SEARCH & RESOLUTION ==========
-                    st.markdown("---")
-                    st.subheader("🎯 Step 2: Resolution from Knowledge Base")
+                    st.markdown('<div class="zoho-card">', unsafe_allow_html=True)
+                    st.markdown('<div class="zoho-card-header">📚 Knowledge Base Resolution</div>', unsafe_allow_html=True)
 
                     if st.session_state.kb_ready:
                         with st.spinner("Searching Knowledge Base for relevant solutions..."):
