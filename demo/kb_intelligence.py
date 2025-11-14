@@ -108,7 +108,10 @@ Return JSON:
   }}
 }}
 
-Only include "new_article" if action is "add_new".
+IMPORTANT:
+- Include "new_article" if action is "add_new" (completely new article)
+- Include "new_article" if action is "update_existing" (the UPDATED/IMPROVED version of the existing article with the better solution merged in)
+- Do NOT include "new_article" if action is "remove" or "none"
 """
 
         try:

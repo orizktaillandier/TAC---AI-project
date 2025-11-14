@@ -30,89 +30,131 @@ except:
 
 def main():
     """Main function for the demo app"""
-    # Custom CSS - Zoho-like styling
+    # Custom CSS - Clean professional styling
     st.markdown("""
     <style>
-        /* Zoho color palette */
+        /* Professional color palette */
         :root {
-            --zoho-orange: #E65100;
-            --zoho-red: #D84315;
-            --zoho-blue: #1976D2;
-            --zoho-gray: #F5F5F5;
-            --zoho-border: #E0E0E0;
+            --primary-orange: #FF6B35;
+            --primary-blue: #4A90E2;
+            --accent-green: #2ECC71;
+            --dark-bg: #1E293B;
+            --card-bg: #334155;
+            --border-color: #475569;
         }
 
-        /* Main layout */
+        /* Main layout - dark background */
         .main {
-            background-color: #FAFAFA;
-            padding: 0;
+            background-color: #1E293B;
+            padding: 1rem;
         }
 
-        /* Zoho-style header */
-        .zoho-header {
-            background: linear-gradient(135deg, #E65100 0%, #D84315 100%);
+        /* Light text on dark background */
+        .main p, .main span, .main div, .main label {
+            color: #E2E8F0 !important;
+        }
+
+        .main h1, .main h2, .main h3, .main h4, .main h5, .main h6 {
+            color: #F1F5F9 !important;
+        }
+
+        /* Clean header */
+        .app-header {
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
             color: white;
-            padding: 1.5rem 2rem;
-            margin: -1rem -1rem 2rem -1rem;
-            border-bottom: 3px solid #BF360C;
+            padding: 1.2rem 2rem;
+            margin: -1rem -1rem 1.5rem -1rem;
+            border-bottom: 2px solid #2E5F8E;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
-        .zoho-header h1 {
+        .app-header h1 {
             margin: 0;
-            font-size: 1.8rem;
+            font-size: 1.6rem;
             font-weight: 600;
         }
 
-        .zoho-header p {
-            margin: 0.5rem 0 0 0;
-            opacity: 0.9;
-            font-size: 0.95rem;
+        .app-header p {
+            margin: 0.4rem 0 0 0;
+            opacity: 0.95;
+            font-size: 0.9rem;
         }
 
-        /* Zoho-style cards */
+        /* Professional cards - dark theme */
         .zoho-card {
-            background: white;
-            border: 1px solid #E0E0E0;
-            border-radius: 8px;
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
             padding: 1.5rem;
             margin-bottom: 1.5rem;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .zoho-card-compact {
+            background: #334155;
+            border: 1px solid #475569;
+            border-radius: 6px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
         .zoho-card-header {
             font-size: 1.1rem;
             font-weight: 600;
-            color: #333;
+            color: #F1F5F9;
             margin-bottom: 1rem;
             padding-bottom: 0.75rem;
-            border-bottom: 2px solid #E65100;
+            border-bottom: 2px solid #4A90E2;
+        }
+
+        .info-group {
+            background: #475569;
+            padding: 0.75rem;
+            border-radius: 4px;
+            margin-bottom: 0.75rem;
+        }
+
+        .info-group-title {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: #94A3B8;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.5rem;
+        }
+
+        .info-value {
+            font-size: 0.95rem;
+            color: #E2E8F0;
+            font-weight: 500;
         }
 
         /* Ticket status badges */
         .ticket-badge {
             display: inline-block;
-            padding: 0.4rem 1rem;
-            border-radius: 20px;
-            font-size: 0.85rem;
+            padding: 0.35rem 0.9rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
             font-weight: 600;
             margin-right: 0.5rem;
         }
 
         .badge-open {
-            background-color: #FFF3E0;
-            color: #E65100;
-            border: 1px solid #FFB74D;
+            background-color: #E3F2FD;
+            color: #1976D2;
+            border: 1px solid #90CAF9;
         }
 
         .badge-pending {
-            background-color: #FFF9C4;
-            color: #F57C00;
+            background-color: #FFF9E6;
+            color: #F57F17;
             border: 1px solid #FFD54F;
         }
 
         .badge-urgent {
             background-color: #FFEBEE;
-            color: #D32F2F;
+            color: #C62828;
             border: 1px solid #EF5350;
         }
 
@@ -122,33 +164,65 @@ def main():
             border: 1px solid #66BB6A;
         }
 
-        /* Zoho-style buttons */
+        /* Professional buttons */
         .stButton>button {
-            background: linear-gradient(135deg, #E65100 0%, #D84315 100%);
+            background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
             color: white;
             border: none;
             border-radius: 6px;
-            padding: 0.75rem 1.5rem;
+            padding: 0.7rem 1.5rem;
             font-weight: 600;
-            transition: all 0.3s ease;
-            box-shadow: 0 2px 4px rgba(230, 81, 0, 0.3);
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(74, 144, 226, 0.3);
         }
 
         .stButton>button:hover {
-            background: linear-gradient(135deg, #D84315 0%, #BF360C 100%);
-            box-shadow: 0 4px 8px rgba(230, 81, 0, 0.4);
+            background: linear-gradient(135deg, #357ABD 0%, #2E5F8E 100%);
+            box-shadow: 0 3px 6px rgba(74, 144, 226, 0.4);
             transform: translateY(-1px);
         }
 
-        /* Zoho-style metrics */
+        /* Ticket card buttons - special styling */
+        button[kind="secondary"] {
+            background: #334155 !important;
+            color: #E2E8F0 !important;
+            border: 1px solid #475569 !important;
+            border-left: 3px solid #4A90E2 !important;
+            text-align: left !important;
+            padding: 0.75rem 1rem !important;
+            font-weight: 500 !important;
+        }
+
+        button[kind="secondary"]:hover {
+            background: #3B4A5F !important;
+            border-left: 3px solid #60A5FA !important;
+            transform: translateX(2px);
+        }
+
+        /* Metrics styling - dark theme, compact */
         div[data-testid="stMetricValue"] {
-            color: #E65100;
+            color: #60A5FA;
             font-weight: 600;
+            font-size: 1.1rem !important;
+        }
+
+        div[data-testid="stMetricLabel"] {
+            color: #94A3B8 !important;
+            font-size: 0.75rem !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        div[data-testid="stMetric"] {
+            background: #475569;
+            padding: 0.75rem;
+            border-radius: 4px;
+            border-left: 3px solid #4A90E2;
         }
 
         /* Field labels */
         .zoho-field-label {
-            color: #666;
+            color: #94A3B8;
             font-size: 0.85rem;
             font-weight: 600;
             text-transform: uppercase;
@@ -156,30 +230,41 @@ def main():
             margin-bottom: 0.5rem;
         }
 
-        /* Zoho-style sidebar */
+        /* Professional sidebar - dark theme */
         section[data-testid="stSidebar"] {
-            background-color: #FAFAFA;
-            border-right: 1px solid #E0E0E0;
+            background-color: #0F172A;
+            border-right: 1px solid #475569;
         }
 
         section[data-testid="stSidebar"] > div {
-            background-color: #FAFAFA;
+            background-color: #0F172A;
+        }
+
+        /* Sidebar text visibility */
+        section[data-testid="stSidebar"] p,
+        section[data-testid="stSidebar"] span,
+        section[data-testid="stSidebar"] div,
+        section[data-testid="stSidebar"] label,
+        section[data-testid="stSidebar"] h1,
+        section[data-testid="stSidebar"] h2,
+        section[data-testid="stSidebar"] h3 {
+            color: #E2E8F0 !important;
         }
 
         /* Success/warning/error styling */
         .stSuccess {
             background-color: #E8F5E9;
-            border-left: 4px solid #4CAF50;
+            border-left: 4px solid #2ECC71;
         }
 
         .stWarning {
-            background-color: #FFF3E0;
-            border-left: 4px solid #E65100;
+            background-color: #FFF9E6;
+            border-left: 4px solid #F59E0B;
         }
 
         .stError {
             background-color: #FFEBEE;
-            border-left: 4px solid #D32F2F;
+            border-left: 4px solid #EF4444;
         }
 
         /* Ticket info grid */
@@ -191,10 +276,34 @@ def main():
         }
 
         .ticket-info-item {
-            background: #F5F5F5;
+            background: #475569;
             padding: 1rem;
             border-radius: 6px;
-            border-left: 3px solid #E65100;
+            border-left: 3px solid #4A90E2;
+            color: #E2E8F0;
+        }
+
+        /* Streamlit specific text fixes - dark theme */
+        .stMarkdown, .stText {
+            color: #E2E8F0 !important;
+        }
+
+        /* Input fields - dark theme */
+        input, textarea, select {
+            background-color: #334155 !important;
+            color: #E2E8F0 !important;
+            border: 1px solid #475569 !important;
+        }
+
+        /* Expander content */
+        .streamlit-expanderContent {
+            color: #E2E8F0 !important;
+            background-color: #334155 !important;
+        }
+
+        /* Radio and checkbox labels */
+        .stRadio label, .stCheckbox label {
+            color: #E2E8F0 !important;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -245,11 +354,11 @@ def main():
     if "kb_results_cache" not in st.session_state:
         st.session_state.kb_results_cache = None
 
-    # Zoho-style Header
+    # Professional Header
     st.markdown("""
-    <div class="zoho-header">
-        <h1>Zoho Desk - AI Agent Assistant</h1>
-        <p>Intelligent ticket classification and resolution powered by AI</p>
+    <div class="app-header">
+        <h1>🎯 Support Desk - AI Assistant</h1>
+        <p>Intelligent ticket classification and resolution powered by GPT-5</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -372,9 +481,6 @@ def main():
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        st.markdown('<div class="zoho-card">', unsafe_allow_html=True)
-        st.markdown("### Ticket Details")
-
         input_method = st.radio(
             "📥 Input Method",
             ["New Ticket Entry", "Load Sample Ticket"],
@@ -383,43 +489,81 @@ def main():
 
         if input_method == "Load Sample Ticket":
             if st.session_state.mock_tickets:
-                ticket_options = [
-                    f"{t['ticket_id']} - {t['subject'][:50]}..."
-                    for t in st.session_state.mock_tickets
-                ]
-                selected = st.selectbox("Select a sample ticket:", ticket_options)
+                st.markdown("**Select Sample Ticket:**")
 
-                if selected:
-                    idx = int(selected.split(" - ")[0]) - 12345
-                    if 0 <= idx < len(st.session_state.mock_tickets):
-                        ticket = st.session_state.mock_tickets[idx]
-                        st.markdown('<span class="ticket-badge badge-open">OPEN</span> <span class="ticket-badge badge-pending">Awaiting Agent</span>', unsafe_allow_html=True)
-                        st.markdown("")  # Spacing
-                        ticket_subject = st.text_input("📧 Subject", value=ticket["subject"])
-                        ticket_text = st.text_area(
-                            "📝 Description",
-                            value=ticket["description"],
-                            height=200
-                        )
-                    else:
-                        ticket_subject = st.text_input("📧 Subject")
-                        ticket_text = st.text_area("📝 Description", height=200)
+                # Display tickets in a grid (3 per row)
+                tickets_to_show = st.session_state.mock_tickets[:9]  # Show first 9
+
+                for row_start in range(0, len(tickets_to_show), 3):
+                    cols = st.columns(3)
+
+                    for col_idx, col in enumerate(cols):
+                        ticket_idx = row_start + col_idx
+                        if ticket_idx < len(tickets_to_show):
+                            ticket = tickets_to_show[ticket_idx]
+                            ticket_id = ticket['ticket_id']
+                            subject = ticket['subject'][:40] + "..." if len(ticket['subject']) > 40 else ticket['subject']
+                            description = ticket['description'][:80] + "..." if len(ticket['description']) > 80 else ticket['description']
+
+                            with col:
+                                # Create compact visual card
+                                card_html = f"""
+                                <div class="zoho-card-compact" style="min-height: 140px; display: flex; flex-direction: column;">
+                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
+                                        <span class="ticket-badge badge-open" style="font-size: 0.65rem;">#{ticket_id}</span>
+                                    </div>
+                                    <div style="font-weight: 600; color: #E2E8F0; margin-bottom: 0.4rem; font-size: 0.85rem; line-height: 1.3;">{subject}</div>
+                                    <div style="color: #94A3B8; font-size: 0.75rem; line-height: 1.3; flex-grow: 1;">{description}</div>
+                                </div>
+                                """
+                                st.markdown(card_html, unsafe_allow_html=True)
+
+                                # Add select button
+                                if st.button(
+                                    "Select",
+                                    key=f"ticket_{ticket_idx}",
+                                    use_container_width=True
+                                ):
+                                    st.session_state.selected_ticket_idx = ticket_idx
+
+                st.markdown("")  # Spacing
+
+                # Show selected ticket details
+                if 'selected_ticket_idx' in st.session_state:
+                    st.markdown("---")
+                    st.markdown("**📋 Selected Ticket Details:**")
+                    ticket = st.session_state.mock_tickets[st.session_state.selected_ticket_idx]
+
+                    st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
+                    st.markdown(f'<span class="ticket-badge badge-open">#{ticket["ticket_id"]}</span> <span class="ticket-badge badge-pending">Awaiting Agent</span>', unsafe_allow_html=True)
+                    st.markdown("")
+                    ticket_subject = st.text_input("📧 Subject", value=ticket["subject"])
+                    ticket_text = st.text_area(
+                        "📝 Description",
+                        value=ticket["description"],
+                        height=150
+                    )
+                    st.markdown('</div>', unsafe_allow_html=True)
+                else:
+                    ticket_subject = ""
+                    ticket_text = ""
             else:
                 st.warning("No sample tickets available")
                 ticket_subject = st.text_input("📧 Subject")
-                ticket_text = st.text_area("📝 Description", height=200)
+                ticket_text = st.text_area("📝 Description", height=150)
         else:
+            st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
             st.markdown('<span class="ticket-badge badge-open">NEW TICKET</span> <span class="ticket-badge badge-pending">Classification Needed</span>', unsafe_allow_html=True)
-            st.markdown("")  # Spacing
+            st.markdown("")
             ticket_subject = st.text_input("📧 Subject")
             ticket_text = st.text_area(
                 "📝 Description",
                 placeholder="Enter ticket description from customer...",
-                height=200
+                height=150
             )
+            st.markdown('</div>', unsafe_allow_html=True)
 
-        classify_button = st.button("🚀 Analyze Ticket", type="primary")
-        st.markdown('</div>', unsafe_allow_html=True)  # Close zoho-card
+        classify_button = st.button("🚀 Analyze Ticket", type="primary", use_container_width=True)
 
     with col2:
         st.markdown('<div class="zoho-card">', unsafe_allow_html=True)
@@ -449,49 +593,58 @@ def main():
                     entities = result.get("entities", {})
                     suggested_response = result.get("suggested_response", "")
 
-                    # Display classification results
-                    st.markdown('<div class="zoho-card">', unsafe_allow_html=True)
-                    st.markdown('<div class="zoho-card-header">🎯 Ticket Classification Results</div>', unsafe_allow_html=True)
+                    # Display classification results - Row layout
+                    st.markdown("---")
                     st.markdown('<span class="ticket-badge badge-resolved">AUTO-CLASSIFIED</span>', unsafe_allow_html=True)
-                    st.markdown("")  # Spacing
+                    st.markdown("")
 
                     # Row 1: Main Classification
-                    col1, col2, col3, col4 = st.columns(4)
-                    with col1:
+                    st.markdown("**🎯 Classification Details**")
+                    c1, c2, c3, c4 = st.columns(4)
+                    with c1:
                         st.metric("Category", classification.get("category", "N/A"))
-                    with col2:
+                    with c2:
                         st.metric("Sub-Category", classification.get("sub_category", "N/A"))
-                    with col3:
+                    with c3:
                         st.metric("Tier", classification.get("tier", "N/A"))
-                    with col4:
+                    with c4:
                         st.metric("Inventory Type", classification.get("inventory_type", "N/A"))
 
-                    # Row 2: Dealer Information
-                    col1, col2, col3, col4 = st.columns(4)
-                    with col1:
+                    st.markdown("")
+
+                    # Row 2: Contact & Dealer
+                    st.markdown("**👤 Contact & Dealer Information**")
+                    c1, c2, c3, c4 = st.columns(4)
+                    with c1:
                         st.metric("Contact", classification.get("contact", "N/A"))
-                    with col2:
+                    with c2:
                         st.metric("Dealer Name", classification.get("dealer_name", "N/A"))
-                    with col3:
+                    with c3:
                         st.metric("Dealer ID", classification.get("dealer_id", "N/A"))
-                    with col4:
+                    with c4:
                         st.metric("Rep", classification.get("rep", "N/A"))
 
-                    # Row 3: Integration
-                    col1, col2 = st.columns(2)
-                    with col1:
+                    st.markdown("")
+
+                    # Row 3: Integrations
+                    st.markdown("**🔗 Integrations**")
+                    c1, c2 = st.columns(2)
+                    with c1:
                         st.metric("Syndicator", classification.get("syndicator", "N/A") or "N/A")
-                    with col2:
+                    with c2:
                         st.metric("Provider", classification.get("provider", "N/A") or "N/A")
 
                     # Sentiment Analysis Display
                     sentiment = result.get("sentiment", {})
                     if sentiment:
-                        st.markdown("---")
-                        st.markdown("### 💭 Sentiment & Urgency Analysis")
+                        # Add sentiment as a new row
+                        st.markdown("")
+                        col1_s, col2_s, col3_s = st.columns(3)
 
-                        col1, col2, col3, col4 = st.columns(4)
-                        with col1:
+                        with col1_s:
+                            st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
+                            st.markdown("**💭 Sentiment & Risk**")
+
                             sentiment_label = sentiment.get("label", "Neutral")
                             sentiment_score = sentiment.get("score", 0)
 
@@ -503,7 +656,6 @@ def main():
                             else:
                                 st.info(f"🟡 {sentiment_label} ({sentiment_score})")
 
-                        with col2:
                             urgency = sentiment.get("urgency_level", "Medium")
                             urgency_icons = {
                                 "Critical": "⚡",
@@ -512,12 +664,8 @@ def main():
                                 "Low": "📋"
                             }
                             icon = urgency_icons.get(urgency, "📋")
-                            if urgency in ["Critical", "High"]:
-                                st.warning(f"{icon} Urgency: {urgency}")
-                            else:
-                                st.metric("Urgency", f"{icon} {urgency}")
+                            st.metric("Urgency", f"{icon} {urgency}")
 
-                        with col3:
                             escalation_risk = sentiment.get("escalation_risk", "Low")
                             if escalation_risk in ["High", "Critical"]:
                                 st.error(f"⚠️ Risk: {escalation_risk}")
@@ -525,17 +673,14 @@ def main():
                                 st.warning(f"⚠️ Risk: {escalation_risk}")
                             else:
                                 st.success(f"✅ Risk: {escalation_risk}")
+                            st.markdown('</div>', unsafe_allow_html=True)
 
-                        with col4:
-                            flags = sentiment.get("flags", [])
-                            if flags:
-                                st.metric("Flags", len(flags))
-                            else:
-                                st.metric("Flags", "None")
-
-                        # Show flags and recommendations if present
+                        # Show flags and recommendations
+                        flags = sentiment.get("flags", [])
                         if flags:
-                            with st.expander("🚩 Alert Flags", expanded=True):
+                            with col2_s:
+                                st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
+                                st.markdown("**🚩 Alert Flags**")
                                 for flag in flags:
                                     if "CRITICAL" in flag:
                                         st.error(f"• {flag}")
@@ -543,24 +688,30 @@ def main():
                                         st.warning(f"• {flag}")
                                     else:
                                         st.info(f"• {flag}")
+                                st.markdown('</div>', unsafe_allow_html=True)
 
                         recommendations = sentiment.get("recommendations", [])
                         if recommendations:
-                            with st.expander("💡 Recommended Actions"):
+                            target_col = col3_s if flags else col2_s
+                            with target_col:
+                                st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
+                                st.markdown("**💡 Recommended Actions**")
                                 for rec in recommendations:
                                     st.markdown(f"• {rec}")
+                                st.markdown('</div>', unsafe_allow_html=True)
 
-                    # Entities (additional context)
-                    if entities:
-                        with st.expander("🔍 Extracted Entities & Context"):
-                            st.json(entities)
+                    # Additional Info in expanders
+                    col_exp1, col_exp2, col_exp3 = st.columns(3)
+                    with col_exp1:
+                        # Entities (additional context)
+                        if entities:
+                            with st.expander("🔍 Extracted Entities & Context"):
+                                st.json(entities)
 
-                    # Suggested response
-                    if suggested_response:
-                        with st.expander("💬 AI Suggested Response"):
-                            st.markdown(suggested_response)
-
-                    st.markdown('</div>', unsafe_allow_html=True)  # Close classification card
+                        # Suggested response
+                        if suggested_response:
+                            with st.expander("💬 AI Suggested Response"):
+                                st.markdown(suggested_response)
 
                     # ========== STEP 2: KB SEARCH & RESOLUTION ==========
                     st.markdown('<div class="zoho-card">', unsafe_allow_html=True)

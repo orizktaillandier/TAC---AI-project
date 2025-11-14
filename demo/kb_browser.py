@@ -42,7 +42,7 @@ def init_session_state():
         st.session_state.filter_category = "All"
 
 
-def render_article_card(article: Dict[str, Any], compact: bool = False):
+def render_article_card(article: Dict[str, Any], compact: bool = False, kb=None):
     """Render an article card"""
     if compact:
         # Compact view for list
@@ -158,6 +158,8 @@ def render_article_card(article: Dict[str, Any], compact: bool = False):
                                     # Show rollback button for administrators
                                     if st.button(f"🔄 Rollback to v{version_num}", key=f"rollback_{article.get('id')}_{version_num}"):
                                         if kb.rollback_article(article.get('id'), version_num):
+                                            # Clear cache so all tabs see the rolled-back article
+                                            st.cache_resource.clear()
                                             st.success(f"Rolled back to version {version_num}")
                                             st.rerun()
                                         else:
@@ -254,13 +256,13 @@ def render_kb_browser():
 
             # Show compact list
             for article in filtered_articles:
-                render_article_card(article, compact=True)
+                render_article_card(article, compact=True, kb=kb)
 
         with col_detail:
             # Show selected article
             selected = kb.get_article(st.session_state.selected_article_id)
             if selected:
-                render_article_card(selected, compact=False)
+                render_article_card(selected, compact=False, kb=kb)
             else:
                 st.error("Article not found")
                 st.session_state.selected_article_id = None
@@ -272,7 +274,7 @@ def render_kb_browser():
         st.markdown("---")
 
         for article in filtered_articles:
-            render_article_card(article, compact=True)
+            render_article_card(article, compact=True, kb=kb)
             st.markdown("")  # Spacing
 
 

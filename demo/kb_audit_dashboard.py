@@ -253,6 +253,9 @@ def render_action_buttons(feedback_id: int, recommendation: Dict[str, Any], feed
                     feedback_id=feedback_id
                 )
 
+                # Clear cache so KB Browser and other tabs reload fresh data
+                st.cache_resource.clear()
+
                 st.success(f"Created new KB article #{new_id}")
                 st.rerun()
 
@@ -277,6 +280,9 @@ def render_action_buttons(feedback_id: int, recommendation: Dict[str, Any], feed
                     },
                     feedback_id=feedback_id
                 )
+
+                # Clear cache so KB Browser and other tabs reload fresh data
+                st.cache_resource.clear()
 
                 st.success(f"Updated KB article #{target_id}")
                 st.rerun()

@@ -298,6 +298,9 @@ with tab2:
                                 article_id = st.session_state.knowledge_base.add_article(article)
                                 generated_count += 1
 
+                                # Clear cache so KB Browser and other tabs see the new article
+                                st.cache_resource.clear()
+
                                 st.success(f"✅ Generated: **{article.get('title')}** (ID: {article_id})")
 
                                 # Show preview
