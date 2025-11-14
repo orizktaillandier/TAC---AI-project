@@ -58,34 +58,34 @@ if "knowledge_base" not in st.session_state:
     st.session_state.knowledge_base = KnowledgeBase()
     # Add some sample articles
     st.session_state.knowledge_base.add_article({
-        "title": "Kijiji Export Not Working",
-        "problem": "Dealer reports that their vehicles are not appearing on Kijiji",
-        "solution": "This is typically caused by authentication issues with the Kijiji API",
+        "title": "Syndicator A Export Not Working",
+        "problem": "Dealer reports that their vehicles are not appearing on Syndicator A",
+        "solution": "This is typically caused by authentication issues with the Syndicator A API",
         "steps": [
-            "Verify dealer's Kijiji account is active",
+            "Verify dealer's Syndicator A account is active",
             "Check API credentials in our system",
-            "Re-authenticate Kijiji connection",
+            "Re-authenticate Syndicator A connection",
             "Trigger manual sync"
         ],
         "category": "Syndicator Bug",
-        "syndicator": "Kijiji",
-        "tags": ["kijiji", "export", "api", "authentication"],
+        "syndicator": "Syndicator A",
+        "tags": ["syndicator-a", "export", "api", "authentication"],
         "resolution_time": "15 minutes"
     })
 
     st.session_state.knowledge_base.add_article({
-        "title": "PBS Import Fails with Error 500",
-        "problem": "PBS inventory import returns HTTP 500 error",
-        "solution": "PBS API throttling or temporary outage",
+        "title": "Provider A Import Fails with Error 500",
+        "problem": "Provider A inventory import returns HTTP 500 error",
+        "solution": "Provider A API throttling or temporary outage",
         "steps": [
-            "Check PBS status page",
+            "Check Provider A status page",
             "Wait 10 minutes and retry",
-            "If persists, contact PBS support",
+            "If persists, contact Provider A support",
             "Enable import retry queue"
         ],
         "category": "Import Issue",
-        "provider": "PBS",
-        "tags": ["pbs", "import", "api", "error"],
+        "provider": "Provider A",
+        "tags": ["provider-a", "import", "api", "error"],
         "resolution_time": "5 minutes"
     })
 
@@ -174,12 +174,12 @@ with tab1:
 
     # Mock ticket data for coverage analysis
     mock_tickets = [
-        {"classification": {"category": "Syndicator Bug", "syndicator": "Kijiji"}},
-        {"classification": {"category": "Import Issue", "provider": "PBS"}},
-        {"classification": {"category": "Syndicator Bug", "syndicator": "AutoTrader"}},
+        {"classification": {"category": "Syndicator Bug", "syndicator": "Syndicator A"}},
+        {"classification": {"category": "Import Issue", "provider": "Provider A"}},
+        {"classification": {"category": "Syndicator Bug", "syndicator": "Syndicator B"}},
         {"classification": {"category": "Feature Request"}},
-        {"classification": {"category": "Syndicator Bug", "syndicator": "Facebook"}},
-        {"classification": {"category": "Import Issue", "provider": "CDK"}},
+        {"classification": {"category": "Syndicator Bug", "syndicator": "Syndicator C"}},
+        {"classification": {"category": "Import Issue", "provider": "Provider B"}},
     ]
 
     coverage = st.session_state.knowledge_base.get_coverage_analysis(mock_tickets)
@@ -450,7 +450,7 @@ with tab4:
 
         col1, col2 = st.columns([3, 1])
         with col1:
-            search_query = st.text_input("Enter search keywords:", placeholder="e.g., Kijiji export not working")
+            search_query = st.text_input("Enter search keywords:", placeholder="e.g., Syndicator A export not working")
         with col2:
             category_filter = st.selectbox("Filter by category:",
                                           ["All"] + list(set(a["category"] for a in st.session_state.knowledge_base.articles)))
@@ -497,10 +497,10 @@ with tab4:
                                    ["Syndicator Bug", "Import Issue", "Feature Request", "Configuration", "Other"])
         with col2:
             syndicator = st.selectbox("Syndicator (if applicable):",
-                                     ["N/A", "Kijiji", "AutoTrader", "Facebook", "Trader", "Cars.com"])
+                                     ["N/A", "Syndicator A", "Syndicator B", "Syndicator C", "Platform", "Syndicator D"])
         with col3:
             provider = st.selectbox("Provider (if applicable):",
-                                   ["N/A", "PBS", "CDK", "DealerSocket", "VinSolutions"])
+                                   ["N/A", "Provider A", "Provider B", "Provider C", "Provider D"])
 
         if st.button("🔍 Find Similar Articles", type="primary") and ticket_text:
             classification = {

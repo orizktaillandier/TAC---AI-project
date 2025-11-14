@@ -2,24 +2,24 @@
   {
     "ticket": {
       "ticket_id": "T001",
-      "subject": "Kijiji export not working",
-      "text": "Hi, our vehicles stopped showing up on Kijiji 2 days ago. We checked our account and everything looks fine on our end. Can you please investigate?",
+      "subject": "Syndicator A export not working",
+      "text": "Hi, our vehicles stopped showing up on Syndicator A 2 days ago. We checked our account and everything looks fine on our end. Can you please investigate?",
       "classification": {
         "category": "Syndicator Bug",
-        "syndicator": "Kijiji",
+        "syndicator": "Syndicator A",
         "dealer_name": "Dealership_1",
         "tier": "Tier 2"
       }
     },
     "resolution": {
-      "resolution": "Issue was caused by expired API credentials. Re-authenticated the Kijiji connection and triggered a manual sync. All vehicles now appearing on Kijiji.",
+      "resolution": "Issue was caused by expired API credentials. Re-authenticated the Syndicator A connection and triggered a manual sync. All vehicles now appearing on Syndicator A.",
       "steps": [
-        "Verified dealer's Kijiji account status - Active",
+        "Verified dealer's Syndicator A account status - Active",
         "Checked our system logs - Found auth error",
         "Located expired API credentials",
-        "Re-authenticated Kijiji API connection",
+        "Re-authenticated Syndicator A API connection",
         "Triggered manual sync of all vehicles",
-        "Verified vehicles appearing on Kijiji (5 minute propagation)"
+        "Verified vehicles appearing on Syndicator A (5 minute propagation)"
       ],
       "time_to_resolve": "20 minutes",
       "root_cause": "Expired API credentials"
@@ -28,104 +28,104 @@
   {
     "ticket": {
       "ticket_id": "T002",
-      "subject": "PBS import failing with 500 error",
-      "text": "PBS inventory import has been failing for the past hour with HTTP 500 errors. Our inventory is not updating.",
+      "subject": "Provider A import failing with 500 error",
+      "text": "Provider A inventory import has been failing for the past hour with HTTP 500 errors. Our inventory is not updating.",
       "classification": {
         "category": "Import Issue",
-        "provider": "PBS",
+        "provider": "Provider A",
         "dealer_name": "Dealership_2",
         "tier": "Tier 2"
       }
     },
     "resolution": {
-      "resolution": "PBS was experiencing API rate limiting due to high traffic. Implemented retry logic with exponential backoff. Import successful after 15 minutes.",
+      "resolution": "Provider A was experiencing API rate limiting due to high traffic. Implemented retry logic with exponential backoff. Import successful after 15 minutes.",
       "steps": [
-        "Checked PBS status page - Degraded performance reported",
-        "Reviewed error logs - Confirmed 500 errors from PBS API",
-        "Contacted PBS support - Confirmed rate limiting in effect",
+        "Checked Provider A status page - Degraded performance reported",
+        "Reviewed error logs - Confirmed 500 errors from Provider A API",
+        "Contacted Provider A support - Confirmed rate limiting in effect",
         "Enabled import retry queue with backoff",
-        "Waited for PBS performance to stabilize",
+        "Waited for Provider A performance to stabilize",
         "Retry successful - All inventory imported"
       ],
       "time_to_resolve": "25 minutes",
-      "root_cause": "PBS API rate limiting"
+      "root_cause": "Provider A API rate limiting"
     }
   },
   {
     "ticket": {
       "ticket_id": "T003",
-      "subject": "Pricing showing incorrectly on AutoTrader",
-      "text": "Some of our vehicles are showing the wrong prices on AutoTrader. The prices in our system are correct but AutoTrader is displaying different numbers.",
+      "subject": "Pricing showing incorrectly on Syndicator B",
+      "text": "Some of our vehicles are showing the wrong prices on Syndicator B. The prices in our system are correct but Syndicator B is displaying different numbers.",
       "classification": {
         "category": "Syndicator Bug",
-        "syndicator": "AutoTrader",
+        "syndicator": "Syndicator B",
         "dealer_name": "Dealership_3",
         "tier": "Tier 2"
       }
     },
     "resolution": {
-      "resolution": "AutoTrader was caching old pricing data. Cleared cache on their end and triggered full re-export. Prices now correct.",
+      "resolution": "Syndicator B was caching old pricing data. Cleared cache on their end and triggered full re-export. Prices now correct.",
       "steps": [
         "Verified pricing in our database - Correct",
         "Checked last export timestamp - Recent",
         "Reviewed export payload - Correct pricing sent",
-        "Contacted AutoTrader support",
-        "AutoTrader cleared dealer's cache",
+        "Contacted Syndicator B support",
+        "Syndicator B cleared dealer's cache",
         "Triggered full vehicle re-export",
-        "Verified correct pricing on AutoTrader (30 min propagation)"
+        "Verified correct pricing on Syndicator B (30 min propagation)"
       ],
       "time_to_resolve": "45 minutes",
-      "root_cause": "AutoTrader cache not invalidating"
+      "root_cause": "Syndicator B cache not invalidating"
     }
   },
   {
     "ticket": {
       "ticket_id": "T004",
-      "subject": "Photos missing on Facebook Marketplace",
-      "text": "We uploaded new photos but they're not appearing on Facebook Marketplace. The old photos are still showing.",
+      "subject": "Photos missing on Syndicator C Marketplace",
+      "text": "We uploaded new photos but they're not appearing on Syndicator C Marketplace. The old photos are still showing.",
       "classification": {
         "category": "Syndicator Bug",
-        "syndicator": "Facebook",
+        "syndicator": "Syndicator C",
         "dealer_name": "Dealership_4",
         "tier": "Tier 2"
       }
     },
     "resolution": {
-      "resolution": "Facebook requires specific image dimensions. Dealer's new photos were outside accepted range. Resized images and re-uploaded successfully.",
+      "resolution": "Syndicator C requires specific image dimensions. Dealer's new photos were outside accepted range. Resized images and re-uploaded successfully.",
       "steps": [
         "Reviewed uploaded photos - Found dimension issues",
-        "Checked Facebook requirements - 600x600 to 1200x1200 pixels",
+        "Checked Syndicator C requirements - 600x600 to 1200x1200 pixels",
         "Identified photos outside range",
-        "Resized images to Facebook specifications",
+        "Resized images to Syndicator C specifications",
         "Re-uploaded corrected images",
-        "Verified new photos appearing on Facebook Marketplace"
+        "Verified new photos appearing on Syndicator C Marketplace"
       ],
       "time_to_resolve": "30 minutes",
-      "root_cause": "Image dimensions outside Facebook specs"
+      "root_cause": "Image dimensions outside Syndicator C specs"
     }
   },
   {
     "ticket": {
       "ticket_id": "T005",
-      "subject": "Duplicate listings appearing on Trader",
-      "text": "We're seeing duplicate listings for some vehicles on Trader. Each car is showing up twice.",
+      "subject": "Duplicate listings appearing on Platform",
+      "text": "We're seeing duplicate listings for some vehicles on Platform. Each car is showing up twice.",
       "classification": {
         "category": "Syndicator Bug",
-        "syndicator": "Trader",
+        "syndicator": "Platform",
         "dealer_name": "Dealership_5",
         "tier": "Tier 2"
       }
     },
     "resolution": {
-      "resolution": "Dealer had duplicate VINs in their inventory system. Cleaned up duplicate entries and removed extra listings from Trader.",
+      "resolution": "Dealer had duplicate VINs in their inventory system. Cleaned up duplicate entries and removed extra listings from Platform.",
       "steps": [
         "Queried dealer's inventory - Found duplicate VINs",
         "Verified duplicates not in our system",
         "Confirmed issue in dealer's source system",
         "Contacted dealer to clean up duplicates",
         "Dealer removed duplicate inventory entries",
-        "Triggered Trader export refresh",
-        "Verified single listing per vehicle on Trader"
+        "Triggered Platform export refresh",
+        "Verified single listing per vehicle on Platform"
       ],
       "time_to_resolve": "40 minutes",
       "root_cause": "Duplicate VINs in dealer's inventory system"

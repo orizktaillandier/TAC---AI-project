@@ -3181,9 +3181,9 @@
     "syndicator": "",
     "provider": "",
     "inventory_type": "Both",
-    "usage_count": 0,
+    "usage_count": 1,
     "success_count": 0,
-    "success_rate": 1.0,
+    "success_rate": 0.0,
     "created_at": "2025-01-10T10:00:00",
     "updated_at": "2025-01-10T10:00:00",
     "embedding": [
@@ -4723,7 +4723,8 @@
       0.041684698313474655,
       -0.01355120912194252,
       0.004366705659776926
-    ]
+    ],
+    "last_used": "2025-11-13T20:46:03.560434"
   },
   {
     "id": 4,
@@ -7876,38 +7877,37 @@
   },
   {
     "id": 6,
-    "title": "FAQ: Can We Have Separate Feeds for New vs Used Inventory?",
-    "problem": "Dealer wants to know if they can have different feeds for new and used vehicles.",
-    "solution": "Yes, the platform supports separate inventory type filters per feed.",
+    "title": "Can We Have Separate Feeds for New vs Used Inventory?",
+    "problem": "A dealer wants to send separate new and used vehicle feeds to the same syndicator. Clarify whether multiple feeds or separate feed IDs per syndicator are supported and how to achieve inventory-type separation.",
+    "solution": "You cannot create more than one feed ID per syndicator. Instead, inventory separation (new vs used) is handled via inventory-type controls in the admin dashboard: for each syndicator you can select which inventory types to include using checkboxes. Configure those checkboxes to include only the inventory types you want the syndicator to receive.",
     "steps": [
-      "Explain: Yes, you can have separate feeds for new and used inventory",
-      "Log into Admin Dashboard (to show them)",
-      "Navigate to the client's Exports tab",
-      "Point out the 'Inventory Filter' option when setting up a feed",
-      "Explain they can create two feeds to the same syndicator:",
-      "Feed 1: Set 'Inventory Filter' to 'New Only'",
-      "Feed 2: Set 'Inventory Filter' to 'Used Only'",
-      "Note: Each feed will have a different Feed ID",
-      "Send documentation link for inventory filters",
-      "Confirm if they want to proceed with setup"
+      "Log in to the admin dashboard.",
+      "Navigate to Syndicators (or the appropriate syndicator configuration page).",
+      "Select the syndicator (e.g., Syndicator_Export_1) you want to configure.",
+      "Locate the inventory-type checkboxes (typically labeled New, Used, CPO, etc.).",
+      "Check only the inventory types you want this syndicator to receive. Uncheck the others.",
+      "Save your changes. The single feed ID for that syndicator will now deliver only the selected inventory types.",
+      "If you need different inventory selections for multiple endpoints, contact support to discuss alternatives (e.g., different syndicator accounts or custom routing if available)."
     ],
     "tags": [
-      "faq",
-      "multiple feeds",
-      "inventory filters",
-      "new vs used",
-      "feed configuration"
+      "inventory",
+      "feeds",
+      "syndicator",
+      "new",
+      "used",
+      "admin dashboard",
+      "feed id"
     ],
     "category": "General Question",
     "sub_category": "Other",
-    "syndicator": "",
+    "syndicator": "Syndicator_Export_1",
     "provider": "",
     "inventory_type": "Both",
-    "usage_count": 0,
+    "usage_count": 2,
     "success_count": 0,
-    "success_rate": 1.0,
+    "success_rate": 0.0,
     "created_at": "2025-01-10T10:00:00",
-    "updated_at": "2025-01-10T10:00:00",
+    "updated_at": "2025-11-13T18:42:47.668665",
     "embedding": [
       -0.016713863238692284,
       0.004826902877539396,
@@ -9445,7 +9445,73 @@
       0.015549839474260807,
       -0.016321636736392975,
       -0.0021730551961809397
-    ]
+    ],
+    "last_used": "2025-11-13T18:40:47.871813",
+    "version_history": [
+      {
+        "version": 1,
+        "timestamp": "2025-01-10T10:00:00",
+        "change_reason": "The existing KB article states dealers can have separate feeds for new vs used inventory. The ticket resolution clarifies that as of Nov 12, 2025, dealers cannot create more than one feed ID per syndicator; instead the admin dashboard now provides per-syndicator checkboxes to select which inventory types (new/used/cpo/etc.) are included. The existing article is therefore outdated and should be updated to reflect the current behavior and admin workflow.",
+        "previous_state": {
+          "title": "FAQ: Can We Have Separate Feeds for New vs Used Inventory?",
+          "problem": "Dealer wants to know if they can have different feeds for new and used vehicles.",
+          "solution": "Yes, the platform supports separate inventory type filters per feed.",
+          "steps": [
+            "Explain: Yes, you can have separate feeds for new and used inventory",
+            "Log into Admin Dashboard (to show them)",
+            "Navigate to the client's Exports tab",
+            "Point out the 'Inventory Filter' option when setting up a feed",
+            "Explain they can create two feeds to the same syndicator:",
+            "Feed 1: Set 'Inventory Filter' to 'New Only'",
+            "Feed 2: Set 'Inventory Filter' to 'Used Only'",
+            "Note: Each feed will have a different Feed ID",
+            "Send documentation link for inventory filters",
+            "Confirm if they want to proceed with setup"
+          ],
+          "tags": [
+            "faq",
+            "multiple feeds",
+            "inventory filters",
+            "new vs used",
+            "feed configuration"
+          ],
+          "success_rate": 0.0,
+          "usage_count": 1
+        }
+      },
+      {
+        "version": 2,
+        "timestamp": "2025-11-13T18:23:21.478231",
+        "change_reason": "Existing article (ID 6) states that the platform supports separate feeds for new vs used inventory. The resolution in the ticket clarifies current system behavior: we cannot create more than one feed ID per syndicator, but admins can control which inventory types (new/used) are included via checkboxes in the admin dashboard. This is a correction and improvement to the existing article and should replace the previous, potentially misleading statement.",
+        "previous_state": {
+          "title": "FAQ: Can We Have Separate Feeds for New vs Used Inventory?",
+          "problem": "Dealer wants to know if they can have different feeds for new and used vehicles.",
+          "solution": "Yes, the platform supports separate inventory type filters per feed.",
+          "steps": [
+            "Explain: Yes, you can have separate feeds for new and used inventory",
+            "Log into Admin Dashboard (to show them)",
+            "Navigate to the client's Exports tab",
+            "Point out the 'Inventory Filter' option when setting up a feed",
+            "Explain they can create two feeds to the same syndicator:",
+            "Feed 1: Set 'Inventory Filter' to 'New Only'",
+            "Feed 2: Set 'Inventory Filter' to 'Used Only'",
+            "Note: Each feed will have a different Feed ID",
+            "Send documentation link for inventory filters",
+            "Confirm if they want to proceed with setup"
+          ],
+          "tags": [
+            "faq",
+            "multiple feeds",
+            "inventory filters",
+            "new vs used",
+            "feed configuration"
+          ],
+          "success_rate": 0.0,
+          "usage_count": 2
+        }
+      }
+    ],
+    "version": 3
   },
   {
     "id": 7,
@@ -12599,19 +12665,19 @@
     ]
   },
   {
-    "title": "Kijiji Export Not Working",
-    "problem": "Dealer reports that their vehicles are not appearing on Kijiji",
-    "solution": "This is typically caused by authentication issues with the Kijiji API",
+    "title": "Syndicator A Export Not Working",
+    "problem": "Dealer reports that their vehicles are not appearing on Syndicator A",
+    "solution": "This is typically caused by authentication issues with the Syndicator A API",
     "steps": [
-      "Verify dealer's Kijiji account is active",
+      "Verify dealer's Syndicator A account is active",
       "Check API credentials in our system",
-      "Re-authenticate Kijiji connection",
+      "Re-authenticate Syndicator A connection",
       "Trigger manual sync"
     ],
     "category": "Syndicator Bug",
-    "syndicator": "Kijiji",
+    "syndicator": "Syndicator A",
     "tags": [
-      "kijiji",
+      "syndicator-a",
       "export",
       "api",
       "authentication"
@@ -12631,19 +12697,19 @@
     "embedding": null
   },
   {
-    "title": "PBS Import Fails with Error 500",
-    "problem": "PBS inventory import returns HTTP 500 error",
-    "solution": "PBS API throttling or temporary outage",
+    "title": "Provider A Import Fails with Error 500",
+    "problem": "Provider A inventory import returns HTTP 500 error",
+    "solution": "Provider A API throttling or temporary outage",
     "steps": [
-      "Check PBS status page",
+      "Check Provider A status page",
       "Wait 10 minutes and retry",
-      "If persists, contact PBS support",
+      "If persists, contact Provider A support",
       "Enable import retry queue"
     ],
     "category": "Import Issue",
-    "provider": "PBS",
+    "provider": "Provider A",
     "tags": [
-      "pbs",
+      "provider-a",
       "import",
       "api",
       "error"
@@ -12652,6 +12718,70 @@
     "id": 10,
     "created_at": "2025-11-12T22:11:14.670843",
     "updated_at": "2025-11-12T22:11:14.670850",
+    "usage_count": 0,
+    "success_count": 0,
+    "success_rate": 1.0,
+    "edge_cases": [],
+    "example_tickets": [],
+    "upvotes": 0,
+    "downvotes": 0,
+    "vote_score": 0,
+    "embedding": null
+  },
+  {
+    "title": "Syndicator A Export Not Working",
+    "problem": "Dealer reports that their vehicles are not appearing on Syndicator A",
+    "solution": "This is typically caused by authentication issues with the Syndicator A API",
+    "steps": [
+      "Verify dealer's Syndicator A account is active",
+      "Check API credentials in our system",
+      "Re-authenticate Syndicator A connection",
+      "Trigger manual sync"
+    ],
+    "category": "Syndicator Bug",
+    "syndicator": "Syndicator A",
+    "tags": [
+      "syndicator-a",
+      "export",
+      "api",
+      "authentication"
+    ],
+    "resolution_time": "15 minutes",
+    "id": 11,
+    "created_at": "2025-11-13T20:47:59.463492",
+    "updated_at": "2025-11-13T20:47:59.463499",
+    "usage_count": 0,
+    "success_count": 0,
+    "success_rate": 1.0,
+    "edge_cases": [],
+    "example_tickets": [],
+    "upvotes": 0,
+    "downvotes": 0,
+    "vote_score": 0,
+    "embedding": null
+  },
+  {
+    "title": "Provider A Import Fails with Error 500",
+    "problem": "Provider A inventory import returns HTTP 500 error",
+    "solution": "Provider A API throttling or temporary outage",
+    "steps": [
+      "Check Provider A status page",
+      "Wait 10 minutes and retry",
+      "If persists, contact Provider A support",
+      "Enable import retry queue"
+    ],
+    "category": "Import Issue",
+    "provider": "Provider A",
+    "tags": [
+      "provider-a",
+      "import",
+      "api",
+      "error"
+    ],
+    "resolution_time": "5 minutes",
+    "id": 12,
+    "created_at": "2025-11-13T20:47:59.481508",
+    "updated_at": "2025-11-13T20:47:59.481514",
     "usage_count": 0,
     "success_count": 0,
     "success_rate": 1.0,

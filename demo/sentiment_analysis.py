@@ -337,11 +337,11 @@ def test_sentiment_analysis():
     # Test cases
     test_tickets = [
         {
-            "text": "This is absolutely unacceptable! Our cars have been down on Kijiji for 3 days now. We're losing thousands in sales. I need this fixed immediately or we're cancelling our contract!",
+            "text": "This is absolutely unacceptable! Our cars have been down on Syndicator A for 3 days now. We're losing thousands in sales. I need this fixed immediately or we're cancelling our contract!",
             "classification": {"tier": "Tier 3", "sentiment": "Frustrated"}
         },
         {
-            "text": "Hi, I noticed our AutoTrader feed isn't updating. Can you take a look when you get a chance? Thanks!",
+            "text": "Hi, I noticed our Syndicator B feed isn't updating. Can you take a look when you get a chance? Thanks!",
             "classification": {"tier": "Tier 2", "sentiment": "Neutral"}
         },
         {

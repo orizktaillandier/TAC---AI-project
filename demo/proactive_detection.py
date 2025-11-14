@@ -289,48 +289,48 @@ def test_proactive_detection():
     """Test the proactive issue detector with sample data"""
     detector = ProactiveIssueDetector()
 
-    # Sample tickets simulating a Kijiji outage
+    # Sample tickets simulating a Syndicator A outage
     sample_tickets = [
         {
-            "subject": "Kijiji ads not showing",
+            "subject": "Syndicator A ads not showing",
             "classification": {
                 "dealer_id": "D001",
                 "dealer_name": "Dealership_1",
                 "category": "Syndicator Bug",
-                "syndicator": "Kijiji",
+                "syndicator": "Syndicator A",
                 "tier": "Tier 3",
                 "sentiment": "Frustrated"
             }
         },
         {
-            "subject": "Kijiji feed down",
+            "subject": "Syndicator A feed down",
             "classification": {
                 "dealer_id": "D002",
                 "dealer_name": "Dealership_2",
                 "category": "Syndicator Outage",
-                "syndicator": "Kijiji",
+                "syndicator": "Syndicator A",
                 "tier": "Tier 3",
                 "sentiment": "Negative"
             }
         },
         {
-            "subject": "Cars not appearing on Kijiji",
+            "subject": "Cars not appearing on Syndicator A",
             "classification": {
                 "dealer_id": "D003",
                 "dealer_name": "Dealership_3",
                 "category": "Syndicator Issue",
-                "syndicator": "Kijiji",
+                "syndicator": "Syndicator A",
                 "tier": "Tier 3",
                 "sentiment": "Frustrated"
             }
         },
         {
-            "subject": "PBS import not working",
+            "subject": "Provider A import not working",
             "classification": {
                 "dealer_id": "D004",
                 "dealer_name": "Dealership_4",
                 "category": "Import Issue",
-                "provider": "PBS",
+                "provider": "Provider A",
                 "tier": "Tier 2",
                 "sentiment": "Neutral"
             }

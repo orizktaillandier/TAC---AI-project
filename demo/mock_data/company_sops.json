@@ -1,39 +1,39 @@
 [
   {
     "id": 1,
-    "title": "Kijiji Feed Not Updating - API Connection Issues",
-    "problem": "Dealer's vehicle inventory is not appearing on Kijiji or listings are outdated. This typically occurs when the Kijiji API connection has been interrupted or credentials have expired.",
-    "solution": "Re-authenticate the Kijiji API connection and trigger a manual feed sync. This restores the connection and pushes the current inventory to Kijiji.",
+    "title": "Syndicator A Feed Not Updating - API Connection Issues",
+    "problem": "Dealer's vehicle inventory is not appearing on Syndicator A or listings are outdated. This typically occurs when the Syndicator A API connection has been interrupted or credentials have expired.",
+    "solution": "Re-authenticate the Syndicator A API connection and trigger a manual feed sync. This restores the connection and pushes the current inventory to Syndicator A.",
     "steps": [
       "Log into the dealer's account in the syndication management system",
-      "Navigate to Integrations > Syndicators > Kijiji",
+      "Navigate to Integrations > Syndicators > Syndicator A",
       "Check the API status indicator - if red or yellow, connection needs refresh",
       "Click 'Re-authenticate' and follow the OAuth flow",
       "After successful authentication, click 'Manual Sync Now'",
       "Monitor the sync progress - typically completes in 5-10 minutes",
-      "Verify vehicles appear on Kijiji by spot-checking 3-5 random listings"
+      "Verify vehicles appear on Syndicator A by spot-checking 3-5 random listings"
     ],
-    "tags": ["kijiji", "api", "syndicator", "feed", "authentication"],
+    "tags": ["syndicator-a", "api", "syndicator", "feed", "authentication"],
     "category": "Syndicator Bug",
-    "syndicator": "Kijiji",
+    "syndicator": "Syndicator A",
     "provider": "N/A",
     "created_at": "2024-01-15T10:00:00",
     "edge_cases": [
       {
         "id": 1,
-        "description": "Kijiji account has been suspended or flagged",
+        "description": "Syndicator A account has been suspended or flagged",
         "symptoms": "Authentication succeeds but vehicles still don't appear after sync",
-        "specific_solution": "Contact Kijiji support to resolve account suspension",
+        "specific_solution": "Contact Syndicator A support to resolve account suspension",
         "specific_steps": [
           "Verify authentication is successful in our system",
-          "Log into Kijiji dealer portal directly",
+          "Log into Syndicator A dealer portal directly",
           "Check for any account notifications or warnings",
-          "If account is suspended, contact Kijiji dealer support",
+          "If account is suspended, contact Syndicator A dealer support",
           "Provide dealer account number and business verification",
-          "Once resolved by Kijiji, trigger manual sync from our system"
+          "Once resolved by Syndicator A, trigger manual sync from our system"
         ],
         "context": {
-          "syndicator": "Kijiji",
+          "syndicator": "Syndicator A",
           "category": "Syndicator Bug"
         },
         "success_rate": 1.0,
@@ -45,18 +45,18 @@
     "helpful_count": 21,
     "views": 45,
     "related_issues": [
-      "Kijiji listings showing wrong prices",
-      "Kijiji photos not displaying correctly"
+      "Syndicator A listings showing wrong prices",
+      "Syndicator A photos not displaying correctly"
     ]
   },
   {
     "id": 2,
-    "title": "PBS (Polk) Import Failures - File Format Issues",
-    "problem": "Vehicle data import from PBS (Polk) is failing or incomplete. Dealers notice missing vehicles or incorrect data after PBS import runs.",
-    "solution": "Verify PBS export file format and column mappings, then re-run the import with corrected settings.",
+    "title": "Provider A (Provider A) Import Failures - File Format Issues",
+    "problem": "Vehicle data import from Provider A (Provider A) is failing or incomplete. Dealers notice missing vehicles or incorrect data after Provider A import runs.",
+    "solution": "Verify Provider A export file format and column mappings, then re-run the import with corrected settings.",
     "steps": [
-      "Access the dealer's PBS import settings in Admin > Data Providers",
-      "Download the latest PBS export file from the dealer's PBS account",
+      "Access the dealer's Provider A import settings in Admin > Data Providers",
+      "Download the latest Provider A export file from the dealer's Provider A account",
       "Open the file and verify column headers match our expected format",
       "Check for common issues: extra commas, missing VIN column, date format mismatches",
       "If format is incorrect, update the column mapping in our system",
@@ -64,10 +64,10 @@
       "Review import log for any errors",
       "Verify imported vehicles appear correctly in the inventory"
     ],
-    "tags": ["pbs", "polk", "import", "data-provider", "file-format"],
+    "tags": ["provider-a", "provider-a", "import", "data-provider", "file-format"],
     "category": "Data Provider Issue",
     "syndicator": "N/A",
-    "provider": "PBS",
+    "provider": "Provider A",
     "created_at": "2024-01-20T14:30:00",
     "edge_cases": [],
     "success_rate": 0.88,
@@ -75,28 +75,28 @@
     "helpful_count": 14,
     "views": 31,
     "related_issues": [
-      "CDK import failures",
+      "Provider B import failures",
       "Duplicate VINs after import"
     ]
   },
   {
     "id": 3,
-    "title": "AutoTrader Pricing Sync Issues",
-    "problem": "Vehicle prices on AutoTrader don't match the dealer's actual pricing. This can lead to customer complaints and lost sales opportunities.",
-    "solution": "Force a pricing sync from the inventory management system to AutoTrader and verify pricing rules are correctly configured.",
+    "title": "Syndicator B Pricing Sync Issues",
+    "problem": "Vehicle prices on Syndicator B don't match the dealer's actual pricing. This can lead to customer complaints and lost sales opportunities.",
+    "solution": "Force a pricing sync from the inventory management system to Syndicator B and verify pricing rules are correctly configured.",
     "steps": [
-      "Navigate to the dealer's AutoTrader sync settings",
+      "Navigate to the dealer's Syndicator B sync settings",
       "Check the pricing rule configuration - verify markup/markdown percentages",
-      "Compare a few sample vehicles: internal price vs AutoTrader displayed price",
+      "Compare a few sample vehicles: internal price vs Syndicator B displayed price",
       "If prices are incorrect, update pricing rules as needed",
       "Click 'Force Price Sync' to immediately push correct prices",
-      "Wait 15-20 minutes for AutoTrader to process the update",
-      "Spot-check 5-10 vehicles on AutoTrader to confirm correct pricing",
+      "Wait 15-20 minutes for Syndicator B to process the update",
+      "Spot-check 5-10 vehicles on Syndicator B to confirm correct pricing",
       "Document any pricing rule changes made"
     ],
-    "tags": ["autotrader", "pricing", "sync", "syndicator"],
+    "tags": ["syndicator-b", "pricing", "sync", "syndicator"],
     "category": "Syndicator Bug",
-    "syndicator": "AutoTrader",
+    "syndicator": "Syndicator B",
     "provider": "N/A",
     "created_at": "2024-02-01T09:15:00",
     "edge_cases": [
@@ -104,17 +104,17 @@
         "id": 1,
         "description": "Dealer using custom pricing tiers by vehicle type",
         "symptoms": "Some vehicle types show correct pricing but others don't",
-        "specific_solution": "Configure per-category pricing rules in AutoTrader settings",
+        "specific_solution": "Configure per-category pricing rules in Syndicator B settings",
         "specific_steps": [
-          "Go to AutoTrader Settings > Advanced > Pricing Rules",
+          "Go to Syndicator B Settings > Advanced > Pricing Rules",
           "Click 'Add Category-Specific Rule'",
           "Select vehicle category (New, Used, Certified)",
           "Set appropriate markup/markdown for that category",
           "Save and force sync",
-          "Verify each category shows correct pricing on AutoTrader"
+          "Verify each category shows correct pricing on Syndicator B"
         ],
         "context": {
-          "syndicator": "AutoTrader",
+          "syndicator": "Syndicator B",
           "category": "Syndicator Bug"
         },
         "success_rate": 1.0,
@@ -126,29 +126,29 @@
     "helpful_count": 23,
     "views": 52,
     "related_issues": [
-      "AutoTrader photos out of sync",
-      "AutoTrader missing vehicle features"
+      "Syndicator B photos out of sync",
+      "Syndicator B missing vehicle features"
     ]
   },
   {
     "id": 4,
-    "title": "Facebook Marketplace Photos Not Displaying",
-    "problem": "Vehicle listings on Facebook Marketplace appear without photos or with broken image links, reducing listing effectiveness.",
-    "solution": "Verify image URLs are publicly accessible and meet Facebook's requirements, then re-sync the photo feed.",
+    "title": "Syndicator C Marketplace Photos Not Displaying",
+    "problem": "Vehicle listings on Syndicator C Marketplace appear without photos or with broken image links, reducing listing effectiveness.",
+    "solution": "Verify image URLs are publicly accessible and meet Syndicator C's requirements, then re-sync the photo feed.",
     "steps": [
       "Check if photos display correctly in our internal system",
       "Test a few image URLs directly in browser - should load without authentication",
-      "Verify images meet Facebook requirements: JPEG/PNG, max 8MB, min 400x300px",
-      "Navigate to Facebook Marketplace settings in our system",
+      "Verify images meet Syndicator C requirements: JPEG/PNG, max 8MB, min 400x300px",
+      "Navigate to Syndicator C Marketplace settings in our system",
       "Check 'Photo Sync' status - should show last successful sync time",
       "If sync failed, review error log for specific issues",
-      "Click 'Resync All Photos' to push images to Facebook",
-      "Wait 30-60 minutes for Facebook to process images",
-      "Verify photos appear on Facebook Marketplace listings"
+      "Click 'Resync All Photos' to push images to Syndicator C",
+      "Wait 30-60 minutes for Syndicator C to process images",
+      "Verify photos appear on Syndicator C Marketplace listings"
     ],
-    "tags": ["facebook", "marketplace", "photos", "images", "syndicator"],
+    "tags": ["syndicator-c", "marketplace", "photos", "images", "syndicator"],
     "category": "Syndicator Bug",
-    "syndicator": "Facebook Marketplace",
+    "syndicator": "Syndicator C Marketplace",
     "provider": "N/A",
     "created_at": "2024-02-10T11:45:00",
     "edge_cases": [],
@@ -157,29 +157,29 @@
     "helpful_count": 17,
     "views": 38,
     "related_issues": [
-      "Facebook listings not appearing",
-      "Facebook vehicle descriptions truncated"
+      "Syndicator C listings not appearing",
+      "Syndicator C vehicle descriptions truncated"
     ]
   },
   {
     "id": 5,
-    "title": "CarGurus Duplicate Listings",
-    "problem": "Same vehicles appear multiple times on CarGurus, causing confusion and potential policy violations with CarGurus.",
+    "title": "Syndicator E Duplicate Listings",
+    "problem": "Same vehicles appear multiple times on Syndicator E, causing confusion and potential policy violations with Syndicator E.",
     "solution": "Identify duplicate VINs, remove the duplicates, and implement VIN de-duplication rules to prevent future occurrences.",
     "steps": [
-      "Access CarGurus sync log and identify duplicate VINs",
+      "Access Syndicator E sync log and identify duplicate VINs",
       "Check our inventory system for duplicate VIN entries",
       "If duplicates exist internally, merge or remove them first",
-      "Navigate to CarGurus Settings > Duplicate Prevention",
+      "Navigate to Syndicator E Settings > Duplicate Prevention",
       "Enable 'VIN De-duplication' if not already enabled",
-      "Click 'Remove Duplicates from CarGurus'",
+      "Click 'Remove Duplicates from Syndicator E'",
       "Review the list of vehicles that will be removed",
       "Confirm removal and wait for sync to complete (10-15 minutes)",
-      "Verify each VIN now appears only once on CarGurus"
+      "Verify each VIN now appears only once on Syndicator E"
     ],
-    "tags": ["cargurus", "duplicates", "vin", "syndicator"],
+    "tags": ["syndicator-e", "duplicates", "vin", "syndicator"],
     "category": "Syndicator Bug",
-    "syndicator": "CarGurus",
+    "syndicator": "Syndicator E",
     "provider": "N/A",
     "created_at": "2024-02-15T13:20:00",
     "edge_cases": [],
@@ -188,20 +188,20 @@
     "helpful_count": 12,
     "views": 29,
     "related_issues": [
-      "Trader duplicate listings",
+      "Platform duplicate listings",
       "Multiple feeds sending to same syndicator"
     ]
   },
   {
     "id": 6,
-    "title": "CDK/ADP Integration Connection Timeout",
-    "problem": "Connection to CDK/ADP DMS times out when attempting to pull inventory data, preventing automatic inventory updates.",
-    "solution": "Verify CDK credentials, check firewall rules, and re-establish the connection with increased timeout settings.",
+    "title": "Provider B Integration Connection Timeout",
+    "problem": "Connection to Provider B DMS times out when attempting to pull inventory data, preventing automatic inventory updates.",
+    "solution": "Verify Provider B credentials, check firewall rules, and re-establish the connection with increased timeout settings.",
     "steps": [
-      "Navigate to Admin > Data Providers > CDK",
+      "Navigate to Admin > Data Providers > Provider B",
       "Test the connection by clicking 'Test Connection'",
-      "If timeout occurs, check CDK credentials are current",
-      "Verify dealer's CDK account is active and API access enabled",
+      "If timeout occurs, check Provider B credentials are current",
+      "Verify dealer's Provider B account is active and API access enabled",
       "Check if dealer's firewall is blocking our IP addresses",
       "Provide dealer's IT with our IP whitelist if needed",
       "Increase connection timeout setting from 30s to 60s",
@@ -209,27 +209,27 @@
       "If successful, trigger a full inventory sync",
       "Monitor sync completion and log any errors"
     ],
-    "tags": ["cdk", "adp", "dms", "connection", "timeout", "data-provider"],
+    "tags": ["provider-b", "provider-b", "dms", "connection", "timeout", "data-provider"],
     "category": "Data Provider Issue",
     "syndicator": "N/A",
-    "provider": "CDK",
+    "provider": "Provider B",
     "created_at": "2024-01-25T16:00:00",
     "edge_cases": [
       {
         "id": 1,
-        "description": "CDK server maintenance window causing timeouts",
+        "description": "Provider B server maintenance window causing timeouts",
         "symptoms": "Connection works sometimes but fails during specific hours",
-        "specific_solution": "Schedule syncs outside of CDK maintenance windows",
+        "specific_solution": "Schedule syncs outside of Provider B maintenance windows",
         "specific_steps": [
-          "Contact dealer to confirm CDK maintenance schedule",
+          "Contact dealer to confirm Provider B maintenance schedule",
           "Check our sync schedule in System > Scheduled Tasks",
-          "Update sync time to avoid CDK maintenance hours",
+          "Update sync time to avoid Provider B maintenance hours",
           "Set up backup sync time as fallback",
           "Enable email notifications for failed syncs",
           "Document maintenance window in dealer's account notes"
         ],
         "context": {
-          "provider": "CDK",
+          "provider": "Provider B",
           "category": "Data Provider Issue"
         },
         "success_rate": 1.0,
@@ -241,8 +241,8 @@
     "helpful_count": 15,
     "views": 34,
     "related_issues": [
-      "DealerSocket connection issues",
-      "VinSolutions sync failures"
+      "Provider C connection issues",
+      "Provider D sync failures"
     ]
   },
   {
