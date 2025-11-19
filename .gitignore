@@ -21,3 +21,4 @@ new*.txt
 *.tmp
 *.log
 .claude/
+temp_cleanup/
