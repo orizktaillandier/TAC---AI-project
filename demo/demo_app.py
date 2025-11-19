@@ -355,10 +355,13 @@ def main():
         st.session_state.kb_results_cache = None
 
     # Professional Header
-    st.markdown("""
+    demo_mode = st.session_state.get('demo_mode', False)
+    header_subtitle = "🎬 DEMO MODE - Simplified View" if demo_mode else "Intelligent ticket classification and resolution powered by GPT-5"
+
+    st.markdown(f"""
     <div class="app-header">
         <h1>🎯 Support Desk - AI Assistant</h1>
-        <p>Intelligent ticket classification and resolution powered by GPT-5</p>
+        <p>{header_subtitle}</p>
     </div>
     """, unsafe_allow_html=True)
 
@@ -437,9 +440,11 @@ def main():
             pass
 
     # Main content
-    st.markdown("""
+    demo_mode = st.session_state.get('demo_mode', False)
+    step_prefix = "📋 STEP 1: " if demo_mode else "📋 "
+    st.markdown(f"""
     <div class="zoho-card-header">
-        📋 New Ticket - AI Classification & Resolution
+        {step_prefix}New Ticket - AI Classification & Resolution
     </div>
     """, unsafe_allow_html=True)
 
@@ -634,9 +639,10 @@ def main():
                     with c2:
                         st.metric("Provider", classification.get("provider", "N/A") or "N/A")
 
-                    # Sentiment Analysis Display
+                    # Sentiment Analysis Display (hidden in Demo Mode)
                     sentiment = result.get("sentiment", {})
-                    if sentiment:
+                    demo_mode = st.session_state.get('demo_mode', False)
+                    if sentiment and not demo_mode:
                         # Add sentiment as a new row
                         st.markdown("")
                         col1_s, col2_s, col3_s = st.columns(3)
@@ -715,7 +721,9 @@ def main():
 
                     # ========== STEP 2: KB SEARCH & RESOLUTION ==========
                     st.markdown('<div class="zoho-card">', unsafe_allow_html=True)
-                    st.markdown('<div class="zoho-card-header">📚 Knowledge Base Resolution</div>', unsafe_allow_html=True)
+                    demo_mode = st.session_state.get('demo_mode', False)
+                    kb_header = "📚 STEP 2: Knowledge Base Resolution" if demo_mode else "📚 Knowledge Base Resolution"
+                    st.markdown(f'<div class="zoho-card-header">{kb_header}</div>', unsafe_allow_html=True)
 
                     if st.session_state.kb_ready:
                         with st.spinner("Searching Knowledge Base for relevant solutions..."):
@@ -915,9 +923,9 @@ def main():
     # ========== STEP 3: FEEDBACK & KB LEARNING ==========
     # This is OUTSIDE the classify_button block so form submissions work
     st.markdown("---")
-    st.subheader("🎓 Step 3: KB Learning & Feedback")
-
-    st.write(f"DEBUG: current_ticket_data exists = {st.session_state.current_ticket_data is not None}")
+    demo_mode = st.session_state.get('demo_mode', False)
+    step3_title = "🎓 STEP 3: KB Learning & Feedback" if demo_mode else "🎓 Step 3: KB Learning & Feedback"
+    st.subheader(step3_title)
 
     if st.session_state.current_ticket_data:
         # Use a form to prevent reruns
@@ -947,7 +955,6 @@ def main():
 
         # Process form submission
         if submit_feedback:
-            st.write(f"DEBUG: submit_feedback={submit_feedback}, resolution_failed={resolution_failed}, actual_solution length={len(actual_solution.strip())}")
             if not resolution_failed:
                 # Resolution worked - record success
                 st.success("🎉 Great! This resolution is marked as successful.")

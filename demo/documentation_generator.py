@@ -3,6 +3,7 @@ AI-Powered Documentation Generator
 Automatically generates knowledge base articles from resolved tickets
 """
 
+import logging
 from typing import Dict, Any, List, Optional
 import os
 from dotenv import load_dotenv
@@ -13,6 +14,8 @@ from pathlib import Path
 # Load .env file from the current directory
 env_path = Path(__file__).parent / '.env'
 load_dotenv(env_path)
+
+logger = logging.getLogger(__name__)
 
 
 class DocumentationGenerator:
@@ -41,23 +44,20 @@ class DocumentationGenerator:
         prompt = self._build_generation_prompt(ticket_data, resolution_data)
 
         try:
-            response = self.client.chat.completions.create(
+            # Use Responses API for GPT-5
+            full_input = f"""You are an expert technical writer who creates clear, concise knowledge base articles for support teams.
+
+{prompt}
+
+IMPORTANT: Return ONLY valid JSON, no other text."""
+
+            response = self.client.responses.create(
                 model=self.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are an expert technical writer who creates clear, concise knowledge base articles for support teams."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                temperature=0.3,
-                response_format={"type": "json_object"}
+                input=full_input,
+                reasoning={"effort": "medium"}  # Medium reasoning for quality documentation
             )
 
-            result = json.loads(response.choices[0].message.content)
+            result = json.loads(response.output_text)
 
             # Enhance with metadata from ticket
             classification = ticket_data.get("classification", {})
@@ -70,7 +70,7 @@ class DocumentationGenerator:
             return result
 
         except Exception as e:
-            print(f"Error generating KB article: {e}")
+            logger.error(f"Error generating KB article from ticket {ticket_data.get('ticket_id', 'unknown')}: {e}")
             return self._generate_fallback_article(ticket_data, resolution_data)
 
     def _build_generation_prompt(self, ticket_data: Dict[str, Any],
@@ -144,7 +144,7 @@ Return ONLY valid JSON, no other text."""
                 )
                 articles.append(article)
             except Exception as e:
-                print(f"Error processing ticket {ticket.get('ticket_id', 'unknown')}: {e}")
+                logger.error(f"Error processing ticket {ticket.get('ticket_id', 'unknown')}: {e}")
                 continue
 
         return articles
@@ -177,26 +177,23 @@ Suggest improvements in JSON format:
 Return ONLY valid JSON."""
 
         try:
-            response = self.client.chat.completions.create(
+            # Use Responses API for GPT-5
+            full_input = f"""You are a technical writing expert who reviews documentation quality.
+
+{prompt}
+
+IMPORTANT: Return ONLY valid JSON, no other text."""
+
+            response = self.client.responses.create(
                 model=self.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are a technical writing expert who reviews documentation quality."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                temperature=0.3,
-                response_format={"type": "json_object"}
+                input=full_input,
+                reasoning={"effort": "low"}  # Low reasoning for simple review task
             )
 
-            return json.loads(response.choices[0].message.content)
+            return json.loads(response.output_text)
 
         except Exception as e:
-            print(f"Error suggesting improvements: {e}")
+            logger.error(f"Error suggesting improvements for article: {e}")
             return {
                 "clarity_score": 7,
                 "completeness_score": 7,
@@ -234,28 +231,25 @@ Generate a structured article in JSON format with:
 Return ONLY valid JSON."""
 
         try:
-            response = self.client.chat.completions.create(
+            # Use Responses API for GPT-5
+            full_input = f"""You are a technical writer who structures support resolutions into clear KB articles.
+
+{prompt}
+
+IMPORTANT: Return ONLY valid JSON, no other text."""
+
+            response = self.client.responses.create(
                 model=self.model,
-                messages=[
-                    {
-                        "role": "system",
-                        "content": "You are a technical writer who structures support resolutions into clear KB articles."
-                    },
-                    {
-                        "role": "user",
-                        "content": prompt
-                    }
-                ],
-                temperature=0.3,
-                response_format={"type": "json_object"}
+                input=full_input,
+                reasoning={"effort": "low"}  # Low reasoning for extraction task
             )
 
-            result = json.loads(response.choices[0].message.content)
+            result = json.loads(response.output_text)
             result["category"] = category
             return result
 
         except Exception as e:
-            print(f"Error extracting article: {e}")
+            logger.error(f"Error extracting article from text: {e}")
             return {
                 "title": "Resolution",
                 "problem": "Support issue",
@@ -276,24 +270,24 @@ def test_documentation_generator():
         # Sample resolved ticket
         ticket_data = {
             "ticket_id": "T12345",
-            "subject": "Kijiji ads not showing",
-            "text": "Our vehicles haven't appeared on Kijiji for the past 2 days. Please help!",
+            "subject": "Syndicator A ads not showing",
+            "text": "Our vehicles haven't appeared on Syndicator A for the past 2 days. Please help!",
             "classification": {
                 "category": "Syndicator Bug",
-                "syndicator": "Kijiji",
+                "syndicator": "Syndicator A",
                 "tier": "Tier 2"
             }
         }
 
         resolution_data = {
-            "resolution": "Kijiji API credentials had expired. Re-authenticated and triggered manual sync.",
+            "resolution": "Syndicator A API credentials had expired. Re-authenticated and triggered manual sync.",
             "steps": [
-                "Checked Kijiji API status - all systems operational",
-                "Verified dealer's Kijiji account was active",
+                "Checked Syndicator A API status - all systems operational",
+                "Verified dealer's Syndicator A account was active",
                 "Found expired API credentials in our system",
-                "Re-authenticated Kijiji connection",
+                "Re-authenticated Syndicator A connection",
                 "Triggered manual sync of all vehicles",
-                "Confirmed vehicles appeared on Kijiji within 5 minutes"
+                "Confirmed vehicles appeared on Syndicator A within 5 minutes"
             ],
             "time_to_resolve": "20 minutes"
         }

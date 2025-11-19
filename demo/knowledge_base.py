@@ -4,6 +4,7 @@ Handles storing, searching, and managing KB articles
 """
 
 import json
+import logging
 import os
 from pathlib import Path
 from typing import List, Dict, Any, Optional
@@ -12,6 +13,8 @@ from openai import OpenAI
 from dotenv import load_dotenv
 
 load_dotenv()
+
+logger = logging.getLogger(__name__)
 
 
 class KnowledgeBase:
@@ -43,17 +46,26 @@ class KnowledgeBase:
                 self.kb_file.parent.mkdir(parents=True, exist_ok=True)
                 self.articles = []
                 self.save()
+        except FileNotFoundError:
+            logger.warning(f"KB file not found: {self.kb_file}, initializing empty KB")
+            self.articles = []
+        except json.JSONDecodeError as e:
+            logger.error(f"Error parsing KB JSON file {self.kb_file}: {e}")
+            self.articles = []
         except Exception as e:
-            print(f"Error loading KB: {e}")
+            logger.error(f"Unexpected error loading KB from {self.kb_file}: {e}")
             self.articles = []
 
     def save(self):
         """Save KB to file"""
         try:
+            self.kb_file.parent.mkdir(parents=True, exist_ok=True)
             with open(self.kb_file, 'w', encoding='utf-8') as f:
                 json.dump(self.articles, f, indent=2, ensure_ascii=False)
+        except (IOError, OSError) as e:
+            logger.error(f"Error writing KB file {self.kb_file}: {e}")
         except Exception as e:
-            print(f"Error saving KB: {e}")
+            logger.error(f"Unexpected error saving KB to {self.kb_file}: {e}")
 
     def add_article(self, article: Dict[str, Any]) -> int:
         """Add a new article to KB"""

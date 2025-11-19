@@ -343,7 +343,6 @@ def render_feedback_list():
             st.session_state.ai_recommendations[feedback_id] = item['ai_recommendation']
 
     st.markdown(f"### 📋 {len(pending)} Pending Feedback Items")
-    st.caption(f"DEBUG: Loaded {len(pending)} items from file: {[item['id'] for item in pending]}")
 
     # View mode selector
     view_mode = st.radio(

@@ -50,6 +50,23 @@ def render_sidebar():
         st.markdown("## 🧠 KB System")
         st.markdown("---")
 
+        # Demo Mode Toggle (prominent placement)
+        st.markdown("### 🎬 Presentation Mode")
+        demo_mode = st.toggle(
+            "Enable Demo Mode",
+            value=st.session_state.get('demo_mode', False),
+            help="Simplifies the interface for cleaner demos and presentations. Hides technical details and sentiment analysis.",
+            key="demo_mode_toggle"
+        )
+
+        # Store in session state
+        st.session_state.demo_mode = demo_mode
+
+        if demo_mode:
+            st.info("📊 Demo Mode Active - Simplified view enabled")
+
+        st.markdown("---")
+
         # Navigation
         page = st.radio(
             "Navigate to:",
@@ -68,7 +85,7 @@ def render_sidebar():
         st.markdown("### Quick Info")
         st.caption("**Agent Interface**: Resolve tickets with KB suggestions")
         st.caption("**KB Browser**: Search and explore KB articles")
-        st.caption("**KB Builder**: Create new KB articles manually")
+        st.caption("**KB Builder**: Chat with AI to manage KB articles")
         st.caption("**Audit Dashboard**: Review and approve feedback")
 
         return page
@@ -87,15 +104,9 @@ def run_kb_browser():
 
 
 def run_kb_builder():
-    """Run the KB Builder interface"""
-    import kb_builder_app
-
-    # kb_builder_app doesn't have a main() function, so we need to execute it differently
-    # For now, let's import and let it run
-    st.markdown('<div class="main-header">✏️ KB Builder</div>', unsafe_allow_html=True)
-    st.info("KB Builder interface - Run `streamlit run kb_builder_app.py --server.port 8505` for the full builder interface.")
-
-    # TODO: Extract kb_builder_app content into a callable function
+    """Run the KB Agent Chat interface"""
+    import kb_agent_chat
+    kb_agent_chat.main()
 
 
 def run_audit_dashboard():

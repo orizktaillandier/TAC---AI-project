@@ -21,7 +21,14 @@ class AutomationEngine:
         """Load billing requirements for dealerships"""
         try:
             return pd.read_csv("data/dealership_billing_requirements.csv", encoding="utf-8")
+        except FileNotFoundError:
+            # File doesn't exist, return empty DataFrame
+            return pd.DataFrame()
+        except pd.errors.EmptyDataError:
+            # File exists but is empty
+            return pd.DataFrame()
         except Exception as e:
+            # Other errors (permissions, encoding, etc.)
             print(f"Warning: Could not load billing requirements: {e}")
             return pd.DataFrame()
 
@@ -29,8 +36,21 @@ class AutomationEngine:
         """Load cancelled feeds log"""
         try:
             return pd.read_csv("data/cancelled_feeds.csv", encoding="utf-8")
-        except Exception as e:
+        except FileNotFoundError:
             # If file doesn't exist, create empty DataFrame with proper columns
+            return pd.DataFrame(columns=[
+                'Cancellation Date', 'Dealer ID', 'Dealer Name', 'Feed Name',
+                'Feed Type', 'Cancelled By', 'Reason', 'Feed ID'
+            ])
+        except pd.errors.EmptyDataError:
+            # File exists but is empty
+            return pd.DataFrame(columns=[
+                'Cancellation Date', 'Dealer ID', 'Dealer Name', 'Feed Name',
+                'Feed Type', 'Cancelled By', 'Reason', 'Feed ID'
+            ])
+        except Exception as e:
+            # Other errors
+            print(f"Warning: Could not load cancelled feeds: {e}")
             return pd.DataFrame(columns=[
                 'Cancellation Date', 'Dealer ID', 'Dealer Name', 'Feed Name',
                 'Feed Type', 'Cancelled By', 'Reason', 'Feed ID'

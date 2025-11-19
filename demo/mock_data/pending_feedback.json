@@ -1,1 +1,184 @@
-[]
+[
+  {
+    "id": 2,
+    "timestamp": "2025-11-13T18:40:47.870455",
+    "ticket_data": {
+      "ticket_id": "",
+      "subject": "General question about inventory types",
+      "text": "Quick question - can a dealer have separate feeds for new and used inventory going to the same syndicator?\n\nJust want to confirm before I tell the client.\n\nThanks!\nSupport Agent_6",
+      "category": "General Question",
+      "sub_category": "Other",
+      "syndicator": "Syndicator_Export_1",
+      "provider": "",
+      "dealer_name": ""
+    },
+    "matched_article_id": 6,
+    "resolution_worked": false,
+    "agent_feedback": {
+      "actual_solution": "As of Nov 12th 2025 we can't have more then 1 feed ID per syndicator. Now when you go in admin dashboard each syndicator will have checkboxes for each inventory type",
+      "edge_case": "",
+      "agent_name": "Demo Agent"
+    },
+    "status": "applied",
+    "audit_notes": "Updated KB article #6",
+    "ai_recommendation": {
+      "action": "update_existing",
+      "target_id": 6,
+      "reasoning": "Existing article (ID 6) states that the platform supports separate feeds for new vs used inventory. The resolution in the ticket clarifies current system behavior: we cannot create more than one feed ID per syndicator, but admins can control which inventory types (new/used) are included via checkboxes in the admin dashboard. This is a correction and improvement to the existing article and should replace the previous, potentially misleading statement.",
+      "confidence": 95,
+      "new_article": {
+        "title": "Can We Have Separate Feeds for New vs Used Inventory?",
+        "problem": "A dealer wants to send separate new and used vehicle feeds to the same syndicator. Clarify whether multiple feeds or separate feed IDs per syndicator are supported and how to achieve inventory-type separation.",
+        "solution": "You cannot create more than one feed ID per syndicator. Instead, inventory separation (new vs used) is handled via inventory-type controls in the admin dashboard: for each syndicator you can select which inventory types to include using checkboxes. Configure those checkboxes to include only the inventory types you want the syndicator to receive.",
+        "steps": [
+          "Log in to the admin dashboard.",
+          "Navigate to Syndicators (or the appropriate syndicator configuration page).",
+          "Select the syndicator (e.g., Syndicator_Export_1) you want to configure.",
+          "Locate the inventory-type checkboxes (typically labeled New, Used, CPO, etc.).",
+          "Check only the inventory types you want this syndicator to receive. Uncheck the others.",
+          "Save your changes. The single feed ID for that syndicator will now deliver only the selected inventory types.",
+          "If you need different inventory selections for multiple endpoints, contact support to discuss alternatives (e.g., different syndicator accounts or custom routing if available)."
+        ],
+        "tags": [
+          "inventory",
+          "feeds",
+          "syndicator",
+          "new",
+          "used",
+          "admin dashboard",
+          "feed id"
+        ],
+        "category": "General Question",
+        "sub_category": "Other",
+        "syndicator": "Syndicator_Export_1",
+        "provider": ""
+      }
+    },
+    "recommendation_generated_at": "2025-11-13T18:41:55.266259",
+    "reviewed_at": "2025-11-13T18:42:47.688748"
+  },
+  {
+    "id": 3,
+    "timestamp": "2025-11-14T16:32:00.858651",
+    "ticket_data": {
+      "ticket_id": "",
+      "subject": "Syndicator_Export_4 export not updating",
+      "text": "Hi team,\n\nThe Syndicator_Export_4 feed for Dealership_1 hasn't updated in 3 days. The dealer is calling multiple times per day about this.\n\nCan someone look into it urgently?\n\nSupport Agent_5",
+      "category": "Problem / Bug",
+      "sub_category": "Export",
+      "syndicator": "Syndicator_Export_4",
+      "provider": "",
+      "dealer_name": "Dealership_1"
+    },
+    "matched_article_id": 4,
+    "resolution_worked": false,
+    "agent_feedback": {
+      "actual_solution": "After investigating we found out that export was ok for this client. But the FTP credentials in Admin Dashboard -> export were outdated. Reached out to syndicator and provided updated credentials.",
+      "edge_case": "",
+      "agent_name": "Demo Agent"
+    },
+    "status": "applied",
+    "audit_notes": "Updated KB article #4",
+    "ai_recommendation": {
+      "action": "update_existing",
+      "target_id": 4,
+      "reasoning": "The existing article addresses feeds not updating but lacks the specific, actionable step discovered in this ticket: verifying and updating FTP credentials in Admin Dashboard -> Export and coordinating credential updates with the syndicator. The ticket shows the export itself was functioning but outdated credentials prevented syndicator ingestion. Updating the existing KB to include explicit credential checks, testing, and outreach steps will make the article more complete and increase its effectiveness.",
+      "confidence": 90,
+      "new_article": {
+        "title": "Troubleshooting Export Feed Not Updating (including verifying FTP credentials)",
+        "problem": "Export feed is not showing recent inventory changes or updates. In some cases the export process runs but the syndicator fails to ingest because of outdated or incorrect FTP credentials.",
+        "solution": "Check export status and connection, verify and if necessary update the FTP credentials in Admin Dashboard -> Export, test the FTP connection, and coordinate credential changes with the syndicator.",
+        "steps": [
+          "Confirm the export job status and last successful run in the Admin Dashboard (Exports section).",
+          "Force an export/refresh if available to ensure latest data is generated.",
+          "Check server/export logs for errors or successful file generation and upload timestamps.",
+          "Verify the feed files were uploaded to the syndicator destination (FTP/SFTP) — check file timestamps and sizes.",
+          "Test FTP/SFTP connection to the syndicator using the credentials stored in Admin Dashboard -> Export (or use an FTP client).",
+          "If the connection fails or credentials are rejected, update the FTP username/password in Admin Dashboard -> Export with the latest credentials provided by the syndicator.",
+          "After updating credentials, attempt a manual export and test the FTP upload again to confirm success.",
+          "Notify the syndicator that credentials were updated and confirm they can access and ingest the latest files.",
+          "Monitor subsequent exports and confirm with the dealer that the feed updates resumed.",
+          "If problems persist, collect logs, error messages, and timestamps and escalate to platform/network team or syndicator support as needed."
+        ],
+        "tags": [
+          "export",
+          "feed",
+          "FTP",
+          "SFTP",
+          "credentials",
+          "syndicator",
+          "troubleshooting",
+          "admin-dashboard"
+        ],
+        "category": "Problem / Bug",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_4",
+        "provider": ""
+      }
+    },
+    "recommendation_generated_at": "2025-11-14T16:32:31.684275",
+    "reviewed_at": "2025-11-14T16:33:38.594697"
+  },
+  {
+    "id": 4,
+    "timestamp": "2025-11-14T16:45:29.259583",
+    "ticket_data": {
+      "ticket_id": "",
+      "subject": "Syndicator_Export_4 export not updating",
+      "text": "Hi team,\n\nThe Syndicator_Export_4 feed for Dealership_1 hasn't updated in 3 days. The dealer is calling multiple times per day about this.\n\nCan someone look into it urgently?\n\nSupport Agent_5",
+      "category": "Problem / Bug",
+      "sub_category": "Export",
+      "syndicator": "Syndicator_Export_4",
+      "provider": "",
+      "dealer_name": "Dealership_1"
+    },
+    "matched_article_id": 4,
+    "resolution_worked": false,
+    "agent_feedback": {
+      "actual_solution": "We checked Ftp credentials which were ok. Also setup properly. Issue was on the syndicator's end. Reached out to support team and advised it'll be fixed my tomorrow.",
+      "edge_case": "",
+      "agent_name": "Demo Agent"
+    },
+    "status": "applied",
+    "audit_notes": "Created new KB article #15",
+    "ai_recommendation": {
+      "action": "add_new",
+      "target_id": null,
+      "reasoning": "Existing KB article focuses on verifying FTP credentials when an export feed is not updating. This ticket describes a different root cause — the syndicator's ingestion/end system was the problem despite correct FTP setup. The knowledge base lacks a specific troubleshooting and escalation playbook for cases where the feed export is confirmed working but the syndicator fails to ingest or update. Creating a new article for syndicator-side failures (including steps to confirm export health, gather evidence, contact syndicator support, and communicate with the dealer) will fill this gap.",
+      "confidence": 80,
+      "new_article": {
+        "title": "Troubleshooting When Export Feed Is Up but Syndicator Isn't Ingesting (Syndicator_Export_4)",
+        "problem": "Export files are being generated and delivered (FTP credentials and connection are correct), but the syndicator (Syndicator_Export_4) hasn't updated or ingested the feed for one or more days.",
+        "solution": "Verify that exports are being produced and delivered successfully. If export delivery and credentials are correct, gather logs and delivery evidence, then contact the syndicator's support with the evidence and escalate as needed. Communicate clearly with the dealer about the status and expected resolution timeline.",
+        "steps": [
+          "Step 1 — Verify export generation: Check the export job status in Admin Dashboard -> Export and confirm the feed file(s) were generated at expected intervals.",
+          "Step 2 — Verify FTP delivery: Test the FTP connection and confirm the latest feed file is present on the syndicator's FTP server. Confirm file timestamp and size.",
+          "Step 3 — Confirm credentials and config: Re-check FTP credentials and export configuration (path, file naming, schedule). Document that credentials and config are correct.",
+          "Step 4 — Review logs: Collect export logs and any transfer logs (timestamps, checksums) showing successful transfer. Note any error messages if present.",
+          "Step 5 — Check syndicator status pages/alerts: Verify whether Syndicator_Export_4 has any known outages or incidents reported on their status page or support channel.",
+          "Step 6 — Contact syndicator support: Open a ticket with Syndicator_Export_4 support including: a) feed name, b) dealer ID (Dealership_1), c) timestamps of generated files, d) file names, sizes and checksums, e) evidence of successful FTP transfer, f) brief description of missing ingestion/updates and duration (e.g., 3 days). Request an ETA for resolution and ask them to confirm ingestion success once resolved.",
+          "Step 7 — Escalate internally if needed: If syndicator does not respond within SLA or dealer impact is high, escalate to Syndication Team lead and include collected evidence and dealer contact frequency.",
+          "Step 8 — Communicate with dealer: Provide the dealer with a concise status update including what you checked, that the feed delivery is verified, that the issue is with the syndicator, and the expected ETA or next update.",
+          "Step 9 — Confirm resolution: Once syndicator confirms the fix, verify that the syndicator has ingested the latest feed and that inventory updates are reflected. Document time-to-resolution.",
+          "Step 10 — Post-incident notes: Add a short postmortem note to the ticket: root cause, actions taken, contact with syndicator, and preventive recommendations (e.g., monitoring alerts or automated ingestion checks)."
+        ],
+        "tags": [
+          "export",
+          "feed",
+          "syndicator",
+          "Syndicator_Export_4",
+          "FTP",
+          "ingestion",
+          "troubleshooting",
+          "escalation"
+        ],
+        "category": "Problem / Bug",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_4",
+        "provider": ""
+      }
+    },
+    "recommendation_generated_at": "2025-11-14T16:46:01.952339",
+    "reviewed_at": "2025-11-14T16:47:01.384186"
+  }
+]

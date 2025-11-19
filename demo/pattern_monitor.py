@@ -4,12 +4,15 @@ Detects patterns across tickets and caches results for performance
 """
 
 import json
+import logging
 from pathlib import Path
 from datetime import datetime, timedelta
 from typing import Dict, Any, List
-from proactive_detection import ProactiveDetection
+from proactive_detection import ProactiveIssueDetector
 from feedback_manager import FeedbackManager
 from knowledge_base import KnowledgeBase
+
+logger = logging.getLogger(__name__)
 
 
 class PatternMonitor:
@@ -18,7 +21,7 @@ class PatternMonitor:
     def __init__(self, cache_file: str = "pattern_cache.json", cache_duration_minutes: int = 15):
         self.cache_file = Path("mock_data") / cache_file
         self.cache_duration = timedelta(minutes=cache_duration_minutes)
-        self.detector = ProactiveDetection()
+        self.detector = ProactiveIssueDetector()
         self.feedback_manager = FeedbackManager()
         self.kb = KnowledgeBase()
         self.cached_patterns = None
@@ -174,8 +177,10 @@ class PatternMonitor:
             self.cache_file.parent.mkdir(parents=True, exist_ok=True)
             with open(self.cache_file, 'w', encoding='utf-8') as f:
                 json.dump(cache_data, f, indent=2, ensure_ascii=False)
+        except (IOError, OSError) as e:
+            logger.error(f"Error saving pattern cache to {self.cache_file}: {e}")
         except Exception as e:
-            print(f"Error saving pattern cache: {e}")
+            logger.error(f"Unexpected error saving pattern cache: {e}")
 
     def _load_cache(self) -> bool:
         """Load pattern cache from file"""
@@ -193,8 +198,14 @@ class PatternMonitor:
                 return True
 
             return False
+        except FileNotFoundError:
+            logger.debug(f"Pattern cache file not found: {self.cache_file}")
+            return False
+        except json.JSONDecodeError as e:
+            logger.error(f"Error parsing pattern cache JSON: {e}")
+            return False
         except Exception as e:
-            print(f"Error loading pattern cache: {e}")
+            logger.error(f"Unexpected error loading pattern cache: {e}")
             return False
 
     def get_active_alerts(self) -> List[Dict[str, Any]]:
