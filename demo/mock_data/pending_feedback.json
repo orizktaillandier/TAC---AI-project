@@ -180,5 +180,67 @@
     },
     "recommendation_generated_at": "2025-11-14T16:46:01.952339",
     "reviewed_at": "2025-11-14T16:47:01.384186"
+  },
+  {
+    "id": 5,
+    "timestamp": "2025-11-21T12:15:08.501676",
+    "ticket_data": {
+      "ticket_id": "",
+      "subject": "Activate Syndicator_Export_3 feed for Dealership_2",
+      "text": "Hello,\n\nWe need to activate the Syndicator_Export_3 export feed for Dealership_2. They are a new client and want to start advertising their used inventory.\n\nPlease setup as soon as possible.\n\nOnboarding Specialist_1",
+      "category": "Product Activation — Existing Client",
+      "sub_category": "Export",
+      "syndicator": "Syndicator_Export_3",
+      "provider": "",
+      "dealer_name": "Dealership_2"
+    },
+    "matched_article_id": 2,
+    "resolution_worked": false,
+    "agent_feedback": {
+      "actual_solution": "test",
+      "edge_case": "",
+      "agent_name": "Demo Agent"
+    },
+    "status": "pending",
+    "audit_notes": "",
+    "ai_recommendation": {
+      "action": "update_existing",
+      "target_id": 2,
+      "reasoning": "The existing article 'How to Activate New Export Feed' covers the general task but is sparse and has a 0% success rate. The ticket shows a standard activation for Syndicator_Export_3 for a new dealership and the simple resolution indicates the general flow works. Rather than adding a completely new article, it's more useful to update the existing article with a clearer, step-by-step procedure that includes syndicator-specific notes (Syndicator_Export_3), QA checks, and onboarding communication so future activations are consistent and reproducible.",
+      "confidence": 80,
+      "new_article": {
+        "title": "Activate Export Feed for Existing Clients (Syndicator_Export_3)",
+        "problem": "A dealership (existing client) needs their used inventory exported to the Syndicator_Export_3 platform so their vehicles can be advertised.",
+        "solution": "Verify the dealer's order and account, enable and configure the Syndicator_Export_3 feed, perform QA, and provide the client with the Feed ID and confirmation once the feed is live.",
+        "steps": [
+          "Verify order and permissions: Confirm that Dealership_2 has an active order or entitlement for Syndicator_Export_3 in the billing/onboarding system.",
+          "Confirm account details: Ensure the dealer's account info (Dealer ID, account email, inventory source) is correct and up to date.",
+          "Create/Enable feed: In the export management console, select Syndicator_Export_3 and enable a new export feed for Dealership_2.",
+          "Configure feed settings: Set required feed parameters (frequency, field mappings, filters for used inventory only, authentication credentials if required).",
+          "Generate Feed ID: Save the feed and record the generated Feed ID. Add Feed ID to the dealer's onboarding record.",
+          "Apply provider-specific settings: For Syndicator_Export_3, apply any known required field mappings or formatting rules (note any special fields such as VIN, price, condition).",
+          "Initial test run: Trigger a manual export or test export to ensure the feed file is produced and delivered to the syndicator endpoint (or preview the feed if available).",
+          "QA validation: Verify the test feed contents for required fields, correct data (VINs, prices, images), and that only eligible used inventory items are included.",
+          "Resolve issues: If errors are found, adjust mappings/filters and re-run the test until feed passes QA.",
+          "Notify syndicator if required: If Syndicator_Export_3 requires confirmation or whitelisting, notify them with the Feed ID and sample feed files.",
+          "Confirm with dealer: Inform Dealership_2 and the onboarding specialist that the feed is active, provide the Feed ID, expected start time, and next steps.",
+          "Monitor initial runs: Check the first 24-72 hours of automated exports for failures and resolve any problems promptly.",
+          "Document completion: Update the dealer’s onboarding notes with Feed ID, activation date/time, and any special configuration applied."
+        ],
+        "tags": [
+          "activation",
+          "export",
+          "syndicator_export_3",
+          "onboarding",
+          "feed-id",
+          "QA"
+        ],
+        "category": "Product Activation — Existing Client",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_3",
+        "provider": ""
+      }
+    },
+    "recommendation_generated_at": "2025-11-21T12:15:39.038819"
   }
 ]

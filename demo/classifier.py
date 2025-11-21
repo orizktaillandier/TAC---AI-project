@@ -8,6 +8,7 @@ import pandas as pd
 from openai import OpenAI
 from dotenv import load_dotenv
 from sentiment_analysis import SentimentAnalyzer
+from cache_manager import CacheManager
 
 load_dotenv()
 
@@ -24,6 +25,9 @@ class TicketClassifier:
         self.client = OpenAI(api_key=self.api_key)
         self.model = os.getenv("OPENAI_MODEL", "gpt-5-mini")
         self.reasoning_effort = os.getenv("OPENAI_REASONING_EFFORT", "low")
+
+        # Initialize cache manager (24 hour TTL for classifications)
+        self.cache = CacheManager(cache_file="classification_cache.json", default_ttl_hours=24)
 
         # Load reference data
         self.syndicators = self._load_syndicators()
@@ -185,14 +189,17 @@ Ticket to analyze:
 Output only the JSON object with extracted entities:"""
 
         try:
-            response = self.client.responses.create(
-                model=self.model,
-                input=prompt,
-                reasoning={"effort": self.reasoning_effort}
-            )
-
-            response_text = response.output_text
-            entities = self._parse_json(response_text)
+            # Use cache for entity extraction (same ticket = same entities)
+            def _call_api():
+                response = self.client.responses.create(
+                    model=self.model,
+                    input=prompt,
+                    reasoning={"effort": self.reasoning_effort}
+                )
+                return self._parse_json(response.output_text)
+            
+            # Cache based on prompt content
+            entities = self.cache.cache_api_call(prompt, _call_api)
 
             # Ensure all expected keys exist
             default_entities = {

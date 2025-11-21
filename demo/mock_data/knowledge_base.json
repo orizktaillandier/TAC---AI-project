@@ -1606,9 +1606,9 @@
     "syndicator": "",
     "provider": "",
     "inventory_type": "Both",
-    "usage_count": 0,
+    "usage_count": 1,
     "success_count": 0,
-    "success_rate": 1.0,
+    "success_rate": 0.0,
     "created_at": "2025-01-10T10:00:00",
     "updated_at": "2025-01-10T10:00:00",
     "embedding": [
@@ -3148,7 +3148,8 @@
       0.0231720432639122,
       -0.023376043885946274,
       -0.007914014160633087
-    ]
+    ],
+    "last_used": "2025-11-21T12:15:08.503763"
   },
   {
     "id": 3,
@@ -7941,7 +7942,7 @@
     "syndicator": "Syndicator_Export_1",
     "provider": "",
     "inventory_type": "Both",
-    "usage_count": 2,
+    "usage_count": 3,
     "success_count": 0,
     "success_rate": 0.0,
     "created_at": "2025-01-10T10:00:00",
@@ -9484,7 +9485,7 @@
       -0.016321636736392975,
       -0.0021730551961809397
     ],
-    "last_used": "2025-11-13T18:40:47.871813",
+    "last_used": "2025-11-18T19:45:47.914900",
     "version_history": [
       {
         "version": 1,

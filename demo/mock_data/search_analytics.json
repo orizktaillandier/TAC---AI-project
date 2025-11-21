@@ -1,0 +1,325 @@
+{
+  "searches": [
+    {
+      "query": "Hello,\n\nWe need to activate the Syndicator_Export_3 export feed for Dealership_2. They are a new client and want to start advertising their used inventory.\n\nPlease setup as soon as possible.\n\nOnboarding Specialist_1",
+      "timestamp": "2025-11-18T19:42:53.223706",
+      "results_found": true,
+      "article_id": 2,
+      "result_count": 8,
+      "classification": {
+        "contact": "Rep_1",
+        "dealer_name": "Dealership_2",
+        "dealer_id": "1002",
+        "rep": "Rep_1",
+        "category": "Product Activation — Existing Client",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_3",
+        "provider": "",
+        "inventory_type": "Used",
+        "tier": "Tier 3"
+      },
+      "success": null
+    },
+    {
+      "query": "Hello,\n\nWe need to activate the Syndicator_Export_3 export feed for Dealership_2. They are a new client and want to start advertising their used inventory.\n\nPlease setup as soon as possible.\n\nOnboarding Specialist_1",
+      "timestamp": "2025-11-18T19:43:24.556845",
+      "results_found": true,
+      "article_id": 2,
+      "result_count": 8,
+      "classification": {
+        "contact": "Rep_1",
+        "dealer_name": "Dealership_2",
+        "dealer_id": "1002",
+        "rep": "Rep_1",
+        "category": "Product Activation — Existing Client",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_3",
+        "provider": "",
+        "inventory_type": "Used",
+        "tier": "Tier 3"
+      },
+      "success": null
+    },
+    {
+      "query": "Quick question - can a dealer have separate feeds for new and used inventory going to the same syndicator?\n\nJust want to confirm before I tell the client.\n\nThanks!\nSupport Agent_6",
+      "timestamp": "2025-11-18T19:44:15.270734",
+      "results_found": true,
+      "article_id": 6,
+      "result_count": 8,
+      "classification": {
+        "contact": "",
+        "dealer_name": "",
+        "dealer_id": "",
+        "rep": "",
+        "category": "General Question",
+        "sub_category": "Other",
+        "syndicator": "Syndicator_Export_1",
+        "provider": "",
+        "inventory_type": "New + Used",
+        "tier": "Tier 1"
+      },
+      "success": null
+    },
+    {
+      "query": "Bonjour,\n\nPouvez-vous désactiver les exportations pour les 2 concessionnaires suivants :\n- Dealership_6\n- Dealership_7\n\nMerci,\nSupport Agent_3",
+      "timestamp": "2025-11-18T19:58:10.278158",
+      "results_found": true,
+      "article_id": 1,
+      "result_count": 8,
+      "classification": {
+        "contact": "",
+        "dealer_name": "",
+        "dealer_id": "",
+        "rep": "",
+        "category": "Product Cancellation",
+        "sub_category": "Other",
+        "syndicator": "Syndicator_Export_1",
+        "provider": "",
+        "inventory_type": "Unspecified",
+        "tier": "Tier 1"
+      },
+      "success": null
+    },
+    {
+      "query": "Bonjour,\n\nPouvez-vous désactiver les exportations pour les 2 concessionnaires suivants :\n- Dealership_6\n- Dealership_7\n\nMerci,\nSupport Agent_3",
+      "timestamp": "2025-11-18T20:01:38.652546",
+      "results_found": true,
+      "article_id": 1,
+      "result_count": 8,
+      "classification": {
+        "contact": "",
+        "dealer_name": "",
+        "dealer_id": "",
+        "rep": "",
+        "category": "Product Cancellation",
+        "sub_category": "Other",
+        "syndicator": "Syndicator_Export_1",
+        "provider": "",
+        "inventory_type": "Unspecified",
+        "tier": "Tier 1"
+      },
+      "success": null
+    },
+    {
+      "query": "Hello,\n\nWe need to activate the Syndicator_Export_3 export feed for Dealership_2. They are a new client and want to start advertising their used inventory.\n\nPlease setup as soon as possible.\n\nOnboarding Specialist_1",
+      "timestamp": "2025-11-18T20:02:06.180157",
+      "results_found": true,
+      "article_id": 2,
+      "result_count": 8,
+      "classification": {
+        "contact": "Rep_1",
+        "dealer_name": "Dealership_2",
+        "dealer_id": "1002",
+        "rep": "Rep_1",
+        "category": "Product Activation — Existing Client",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_3",
+        "provider": "",
+        "inventory_type": "Used",
+        "tier": "Tier 3"
+      },
+      "success": null
+    },
+    {
+      "query": "Hello,\n\nWe need to activate the Syndicator_Export_3 export feed for Dealership_2. They are a new client and want to start advertising their used inventory.\n\nPlease setup as soon as possible.\n\nOnboarding Specialist_1",
+      "timestamp": "2025-11-19T00:37:53.341700",
+      "results_found": true,
+      "article_id": 2,
+      "result_count": 8,
+      "classification": {
+        "contact": "Rep_1",
+        "dealer_name": "Dealership_2",
+        "dealer_id": "1002",
+        "rep": "Rep_1",
+        "category": "Product Activation — Existing Client",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_3",
+        "provider": "",
+        "inventory_type": "Used",
+        "tier": "Tier 3"
+      },
+      "success": null
+    },
+    {
+      "query": "Hi team,\n\nWe need to cancel the Syndicator_Export_1 export for Dealership_3. The client has requested this to be done ASAP.\n\nThanks,\nSupport Agent_1\nDealer Support Specialist",
+      "timestamp": "2025-11-19T00:39:57.460328",
+      "results_found": true,
+      "article_id": 1,
+      "result_count": 8,
+      "classification": {
+        "contact": "Rep_1",
+        "dealer_name": "Dealership_3",
+        "dealer_id": "1003",
+        "rep": "Rep_1",
+        "category": "Product Cancellation",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_1",
+        "provider": "",
+        "inventory_type": "Unspecified",
+        "tier": "Tier 3"
+      },
+      "success": null
+    },
+    {
+      "query": "Hi,\n\nCan you confirm if the Syndicator_Export_2 integration is live for Dealership_8? The dealer is asking about the status.\n\nThanks,\nAccount Manager_1",
+      "timestamp": "2025-11-19T00:46:50.177301",
+      "results_found": true,
+      "article_id": 2,
+      "result_count": 8,
+      "classification": {
+        "contact": "Rep_3",
+        "dealer_name": "Dealership_8",
+        "dealer_id": "1008",
+        "rep": "Rep_3",
+        "category": "Other",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_2",
+        "provider": "",
+        "inventory_type": "Unspecified",
+        "tier": "Tier 1"
+      },
+      "success": null
+    },
+    {
+      "query": "Bonjour,\n\nPouvez-vous désactiver les exportations pour les 2 concessionnaires suivants :\n- Dealership_6\n- Dealership_7\n\nMerci,\nSupport Agent_3",
+      "timestamp": "2025-11-19T01:16:04.223100",
+      "results_found": true,
+      "article_id": 1,
+      "result_count": 8,
+      "classification": {
+        "contact": "",
+        "dealer_name": "",
+        "dealer_id": "",
+        "rep": "",
+        "category": "Product Cancellation",
+        "sub_category": "Other",
+        "syndicator": "Syndicator_Export_1",
+        "provider": "",
+        "inventory_type": "Unspecified",
+        "tier": "Tier 1"
+      },
+      "success": null
+    },
+    {
+      "query": "Bonjour,\n\nPouvez-vous désactiver les exportations pour les 2 concessionnaires suivants :\n- Dealership_6\n- Dealership_7\n\nMerci,\nSupport Agent_3",
+      "timestamp": "2025-11-19T01:22:41.563879",
+      "results_found": true,
+      "article_id": 1,
+      "result_count": 8,
+      "classification": {
+        "contact": "",
+        "dealer_name": "",
+        "dealer_id": "",
+        "rep": "",
+        "category": "Product Cancellation",
+        "sub_category": "Other",
+        "syndicator": "Syndicator_Export_1",
+        "provider": "",
+        "inventory_type": "Unspecified",
+        "tier": "Tier 1"
+      },
+      "success": null
+    },
+    {
+      "query": "Bonjour,\n\nPouvez-vous désactiver les exportations pour les 2 concessionnaires suivants :\n- Dealership_6\n- Dealership_7\n\nMerci,\nSupport Agent_3",
+      "timestamp": "2025-11-19T10:11:22.249284",
+      "results_found": true,
+      "article_id": 1,
+      "result_count": 8,
+      "classification": {
+        "contact": "",
+        "dealer_name": "",
+        "dealer_id": "",
+        "rep": "",
+        "category": "Product Cancellation",
+        "sub_category": "Other",
+        "syndicator": "Syndicator_Export_1",
+        "provider": "",
+        "inventory_type": "Unspecified",
+        "tier": "Tier 1"
+      },
+      "success": null
+    },
+    {
+      "query": "Hello,\n\nWe need to activate the Syndicator_Export_3 export feed for Dealership_2. They are a new client and want to start advertising their used inventory.\n\nPlease setup as soon as possible.\n\nOnboarding Specialist_1",
+      "timestamp": "2025-11-19T10:12:21.731708",
+      "results_found": true,
+      "article_id": 2,
+      "result_count": 8,
+      "classification": {
+        "contact": "Rep_1",
+        "dealer_name": "Dealership_2",
+        "dealer_id": "1002",
+        "rep": "Rep_1",
+        "category": "Product Activation — Existing Client",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_3",
+        "provider": "",
+        "inventory_type": "Used",
+        "tier": "Tier 3"
+      },
+      "success": null
+    },
+    {
+      "query": "Hi Support Team,\n\nDealership_4 is still showing vehicles that were sold last week. Can you please check the Provider_Import_1 import? This is causing issues with their inventory display.\n\nBest regards,\nSupport Agent_2",
+      "timestamp": "2025-11-20T10:42:35.648066",
+      "results_found": true,
+      "article_id": 3,
+      "result_count": 8,
+      "classification": {
+        "contact": "Rep_2",
+        "dealer_name": "Dealership_4",
+        "dealer_id": "1004",
+        "rep": "Rep_2",
+        "category": "Problem / Bug",
+        "sub_category": "Import",
+        "syndicator": "",
+        "provider": "Provider_Import_1",
+        "inventory_type": "Unspecified",
+        "tier": "Tier 2"
+      },
+      "success": null
+    },
+    {
+      "query": "Hello,\n\nWe need to activate the Syndicator_Export_3 export feed for Dealership_2. They are a new client and want to start advertising their used inventory.\n\nPlease setup as soon as possible.\n\nOnboarding Specialist_1",
+      "timestamp": "2025-11-20T10:43:17.775589",
+      "results_found": true,
+      "article_id": 2,
+      "result_count": 8,
+      "classification": {
+        "contact": "Rep_1",
+        "dealer_name": "Dealership_2",
+        "dealer_id": "1002",
+        "rep": "Rep_1",
+        "category": "Product Activation — Existing Client",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_3",
+        "provider": "",
+        "inventory_type": "Used",
+        "tier": "Tier 3"
+      },
+      "success": null
+    },
+    {
+      "query": "Hello,\n\nWe need to activate the Syndicator_Export_3 export feed for Dealership_2. They are a new client and want to start advertising their used inventory.\n\nPlease setup as soon as possible.\n\nOnboarding Specialist_1",
+      "timestamp": "2025-11-21T12:11:31.034346",
+      "results_found": true,
+      "article_id": 2,
+      "result_count": 8,
+      "classification": {
+        "contact": "Rep_1",
+        "dealer_name": "Dealership_2",
+        "dealer_id": "1002",
+        "rep": "Rep_1",
+        "category": "Product Activation — Existing Client",
+        "sub_category": "Export",
+        "syndicator": "Syndicator_Export_3",
+        "provider": "",
+        "inventory_type": "Used",
+        "tier": "Tier 3"
+      },
+      "success": null
+    }
+  ],
+  "last_updated": "2025-11-21T12:11:31.034543"
+}

@@ -13,8 +13,211 @@ from classifier import TicketClassifier, load_mock_tickets
 from knowledge_base import KnowledgeBase
 from kb_intelligence import KBIntelligence
 from feedback_manager import FeedbackManager
+from step_automation import StepAutomation
 
 load_dotenv()
+
+
+def render_automated_step(step_data: dict, step_num: int):
+    """Render a step with action buttons if applicable - Clean simple design"""
+    step_text = step_data.get("step_text", "")
+    automation = step_data.get("automation", {})
+    
+    # Only show action buttons, not data displays
+    if automation.get("can_automate") and automation.get("automation_type") == "action":
+        action_type = automation.get("action_type")
+        action_params = automation.get("action_params", {})
+        display_format = automation.get("display_format")
+        
+        if display_format == "action_button":
+            with st.container():
+                col1, col2 = st.columns([3, 1])
+                
+                with col1:
+                    st.markdown(f"**{step_num}.** {step_text}")
+                
+                with col2:
+                    # Execute action button
+                    button_key = f"action_{step_num}_{action_type}_{action_params.get('feed_name', '')}"
+                    
+                    if action_type == "enable_feed":
+                        if st.button("✅ Enable Feed", key=button_key, use_container_width=True, type="primary"):
+                            execute_action(action_type, action_params, step_num)
+                    
+                    elif action_type == "disable_feed":
+                        if st.button("❌ Disable Feed", key=button_key, use_container_width=True, type="primary"):
+                            execute_action(action_type, action_params, step_num)
+                    
+                    elif action_type in ["add_new_export", "add_new_import"]:
+                        if st.button("➕ Add New Feed", key=button_key, use_container_width=True, type="primary"):
+                            execute_action(action_type, action_params, step_num)
+                    
+                    elif action_type == "copy_feed_id":
+                        if st.button("📋 Copy Feed ID", key=button_key, use_container_width=True, type="primary"):
+                            execute_action(action_type, action_params, step_num)
+                    
+                    elif action_type == "force_refresh":
+                        if st.button("🔄 Force Refresh", key=button_key, use_container_width=True, type="primary"):
+                            execute_action(action_type, action_params, step_num)
+                    
+                    elif action_type == "download_feed_file":
+                        if st.button("📥 Download Feed File", key=button_key, use_container_width=True, type="primary"):
+                            execute_action(action_type, action_params, step_num)
+                    
+                    elif action_type == "save_settings":
+                        if st.button("💾 Save Settings", key=button_key, use_container_width=True, type="primary"):
+                            execute_action(action_type, action_params, step_num)
+                    
+                    elif action_type == "add_new_client":
+                        if st.button("➕ Add New Client", key=button_key, use_container_width=True, type="primary"):
+                            execute_action(action_type, action_params, step_num)
+                    
+                    elif action_type == "select_syndicator":
+                        if st.button("📋 Select Syndicator", key=button_key, use_container_width=True, type="primary"):
+                            execute_action(action_type, action_params, step_num)
+                    
+                    elif action_type == "confirm_action":
+                        if st.button("✅ Confirm Action", key=button_key, use_container_width=True, type="primary"):
+                            execute_action(action_type, action_params, step_num)
+            return
+    
+    # Regular step without action button
+    st.markdown(f"**{step_num}.** {step_text}")
+
+
+def execute_action(action_type: str, action_params: dict, step_num: int):
+    """Execute an action via Admin Dashboard"""
+    from step_automation import StepAutomation
+    dashboard = StepAutomation().dashboard
+    
+    dealer_name = action_params.get("dealer_name", "")
+    feed_name = action_params.get("feed_name", "")
+    feed_type = action_params.get("feed_type", "export")
+    
+    result = None
+    
+    if action_type == "enable_feed":
+        result = dashboard.enable_feed(dealer_name, feed_name, feed_type)
+    elif action_type == "disable_feed":
+        result = dashboard.disable_feed(dealer_name, feed_name, feed_type)
+    elif action_type == "add_new_export":
+        result = dashboard.add_new_export(dealer_name, feed_name)
+    elif action_type == "add_new_import":
+        result = dashboard.add_new_export(dealer_name, feed_name)  # Same method for now
+    elif action_type == "copy_feed_id":
+        feed_id = dashboard.get_feed_id(dealer_name, feed_name, feed_type)
+        if feed_id:
+            # Display Feed ID prominently for copying
+            st.success(f"✅ Feed ID: **{feed_id}**")
+            st.code(feed_id, language=None)  # Display in code block for easy copying
+            st.info("💡 Click the code block above to select and copy the Feed ID")
+        else:
+            st.warning("⚠️ Feed ID not found. Feed may not exist yet.")
+        return
+    elif action_type == "force_refresh":
+        result = dashboard.force_refresh_feed(dealer_name, feed_name, feed_type)
+    elif action_type == "download_feed_file":
+        result = dashboard.download_feed_file(dealer_name, feed_name, feed_type)
+    elif action_type == "save_settings":
+        result = dashboard.save_settings(dealer_name, feed_name, feed_type)
+    elif action_type == "add_new_client":
+        result = dashboard.add_new_client(dealer_name)
+    elif action_type == "select_syndicator":
+        feed_name = action_params.get("feed_name", "")
+        result = dashboard.select_syndicator(dealer_name, feed_name)
+    elif action_type == "confirm_action":
+        result = dashboard.confirm_action(dealer_name)
+    
+    if result:
+        if result.get("success"):
+            st.success(f"✅ {result.get('message', 'Action completed successfully')}")
+            
+            # Show Feed ID if available
+            if result.get("feed_id"):
+                st.info(f"📋 Feed ID: **{result['feed_id']}**")
+            
+            # Show download file info
+            if result.get("file_name"):
+                file_name = result.get("file_name")
+                file_size = result.get("file_size", 0)
+                file_size_kb = file_size / 1024
+                
+                st.info(f"📥 **File:** {file_name} ({file_size_kb:.1f} KB)")
+                st.code(result.get("content_preview", ""), language="xml")
+                st.caption("💡 File is ready for download/review")
+            
+            st.rerun()  # Refresh to show updated data
+        else:
+            st.error(f"❌ {result.get('message', 'Action failed')}")
+
+
+def display_client_configuration(dealer_name: str):
+    """Display client configuration summary"""
+    if not dealer_name:
+        st.info("No dealer name available")
+        return
+    
+    from step_automation import StepAutomation
+    dashboard = StepAutomation().dashboard
+    config = dashboard.get_client_configuration(dealer_name)
+    
+    if not config.get("dealer_found"):
+        st.warning(f"⚠️ Configuration not found for {dealer_name}")
+        return
+    
+    # Display in a clean card format
+    st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
+    
+    st.markdown(f"**{config.get('dealer_name', dealer_name)}**")
+    st.caption(f"ID: {config.get('dealer_id', 'N/A')} | Status: {config.get('account_status', 'N/A')}")
+    
+    st.markdown("---")
+    
+    # Active Exports
+    active_exports = config.get("active_exports", [])
+    if active_exports:
+        st.markdown("**📤 Active Exports:**")
+        for export in active_exports:
+            st.markdown(f"• {export}")
+    else:
+        st.markdown("**📤 Active Exports:**")
+        st.caption("None")
+    
+    st.markdown("")
+    
+    # Active Imports
+    active_imports = config.get("active_imports", [])
+    if active_imports:
+        st.markdown("**📥 Active Imports:**")
+        for import_feed in active_imports:
+            st.markdown(f"• {import_feed}")
+    else:
+        st.markdown("**📥 Active Imports:**")
+        st.caption("None")
+    
+    st.markdown('</div>', unsafe_allow_html=True)
+
+
+def render_resolution_steps_with_automation(steps: list, ticket_context: dict):
+    """Render resolution steps with action buttons where applicable - Clean simple layout"""
+    step_automation = StepAutomation()
+    processed_steps = step_automation.process_steps(steps, ticket_context)
+    
+    # Count actionable steps (with buttons)
+    actionable_count = sum(1 for s in processed_steps if s["automation"].get("automation_type") == "action")
+    
+    # Show brief info if there are actionable steps
+    if actionable_count > 0:
+        st.caption(f"💡 {actionable_count} step(s) can be executed directly via buttons")
+    
+    # Render steps in a clean container with reduced spacing
+    with st.container():
+        for i, step_data in enumerate(processed_steps, 1):
+            render_automated_step(step_data, i)
+            # Reduced spacing - only small gap between steps
+            if i < len(processed_steps):
+                st.markdown("<br>", unsafe_allow_html=True)  # Minimal spacing
+
 
 # Page config (with safe handling for unified app import)
 try:
@@ -439,14 +642,8 @@ def main():
             # Silently fail if health monitoring has issues
             pass
 
-    # Main content
-    demo_mode = st.session_state.get('demo_mode', False)
-    step_prefix = "📋 STEP 1: " if demo_mode else "📋 "
-    st.markdown(f"""
-    <div class="zoho-card-header">
-        {step_prefix}New Ticket - AI Classification & Resolution
-    </div>
-    """, unsafe_allow_html=True)
+    # Main content - Clean header
+    st.markdown("---")
 
     # Proactive Pattern Detection Alerts
     try:
@@ -483,105 +680,59 @@ def main():
         # Silently fail if pattern detection has issues
         pass
 
-    col1, col2 = st.columns([2, 1])
-
-    with col1:
-        input_method = st.radio(
-            "📥 Input Method",
-            ["New Ticket Entry", "Load Sample Ticket"],
-            horizontal=True
-        )
-
-        if input_method == "Load Sample Ticket":
-            if st.session_state.mock_tickets:
-                st.markdown("**Select Sample Ticket:**")
-
-                # Display tickets in a grid (3 per row)
-                tickets_to_show = st.session_state.mock_tickets[:9]  # Show first 9
-
-                for row_start in range(0, len(tickets_to_show), 3):
-                    cols = st.columns(3)
-
-                    for col_idx, col in enumerate(cols):
-                        ticket_idx = row_start + col_idx
-                        if ticket_idx < len(tickets_to_show):
-                            ticket = tickets_to_show[ticket_idx]
-                            ticket_id = ticket['ticket_id']
-                            subject = ticket['subject'][:40] + "..." if len(ticket['subject']) > 40 else ticket['subject']
-                            description = ticket['description'][:80] + "..." if len(ticket['description']) > 80 else ticket['description']
-
-                            with col:
-                                # Create compact visual card
-                                card_html = f"""
-                                <div class="zoho-card-compact" style="min-height: 140px; display: flex; flex-direction: column;">
-                                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.4rem;">
-                                        <span class="ticket-badge badge-open" style="font-size: 0.65rem;">#{ticket_id}</span>
-                                    </div>
-                                    <div style="font-weight: 600; color: #E2E8F0; margin-bottom: 0.4rem; font-size: 0.85rem; line-height: 1.3;">{subject}</div>
-                                    <div style="color: #94A3B8; font-size: 0.75rem; line-height: 1.3; flex-grow: 1;">{description}</div>
-                                </div>
-                                """
-                                st.markdown(card_html, unsafe_allow_html=True)
-
-                                # Add select button
-                                if st.button(
-                                    "Select",
-                                    key=f"ticket_{ticket_idx}",
-                                    use_container_width=True
-                                ):
-                                    st.session_state.selected_ticket_idx = ticket_idx
-
-                st.markdown("")  # Spacing
-
-                # Show selected ticket details
-                if 'selected_ticket_idx' in st.session_state:
-                    st.markdown("---")
-                    st.markdown("**📋 Selected Ticket Details:**")
-                    ticket = st.session_state.mock_tickets[st.session_state.selected_ticket_idx]
-
-                    st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
-                    st.markdown(f'<span class="ticket-badge badge-open">#{ticket["ticket_id"]}</span> <span class="ticket-badge badge-pending">Awaiting Agent</span>', unsafe_allow_html=True)
-                    st.markdown("")
-                    ticket_subject = st.text_input("📧 Subject", value=ticket["subject"])
-                    ticket_text = st.text_area(
-                        "📝 Description",
-                        value=ticket["description"],
-                        height=150
-                    )
-                    st.markdown('</div>', unsafe_allow_html=True)
-                else:
-                    ticket_subject = ""
-                    ticket_text = ""
-            else:
-                st.warning("No sample tickets available")
-                ticket_subject = st.text_input("📧 Subject")
-                ticket_text = st.text_area("📝 Description", height=150)
-        else:
-            st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
-            st.markdown('<span class="ticket-badge badge-open">NEW TICKET</span> <span class="ticket-badge badge-pending">Classification Needed</span>', unsafe_allow_html=True)
-            st.markdown("")
-            ticket_subject = st.text_input("📧 Subject")
-            ticket_text = st.text_area(
-                "📝 Description",
-                placeholder="Enter ticket description from customer...",
-                height=150
+    # ========== TOP ROW: Ticket Selection (1/3) + Classification Fields (2/3) ==========
+    col_tickets, col_classification = st.columns([1, 2])
+    
+    with col_tickets:
+        st.markdown("### 📋 Sample Tickets")
+        if st.session_state.mock_tickets:
+            # Create dropdown options
+            ticket_options = [
+                f"#{ticket['ticket_id']}: {ticket['subject'][:60]}{'...' if len(ticket['subject']) > 60 else ''}"
+                for ticket in st.session_state.mock_tickets
+            ]
+            
+            # Get current selection index
+            current_idx = st.session_state.get('selected_ticket_idx', 0)
+            if current_idx >= len(ticket_options):
+                current_idx = 0
+            
+            # Dropdown selector
+            selected_option = st.selectbox(
+                "Select a ticket",
+                options=range(len(ticket_options)),
+                format_func=lambda x: ticket_options[x],
+                index=current_idx,
+                key="ticket_selector"
             )
+            
+            # Update session state if selection changed
+            if selected_option != current_idx:
+                st.session_state.selected_ticket_idx = selected_option
+                st.rerun()
+        else:
+            st.warning("No sample tickets available")
+    
+    with col_classification:
+        # Show selected ticket details and classification
+        if 'selected_ticket_idx' in st.session_state and st.session_state.selected_ticket_idx is not None:
+            ticket = st.session_state.mock_tickets[st.session_state.selected_ticket_idx]
+            ticket_subject = ticket["subject"]
+            ticket_text = ticket["description"]
+            
+            st.markdown("### 📄 Selected Ticket")
+            st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
+            st.markdown(f'<span class="ticket-badge badge-open">#{ticket["ticket_id"]}</span>', unsafe_allow_html=True)
+            st.markdown(f"**Subject:** {ticket_subject}")
+            st.markdown(f"**Description:** {ticket_text[:200]}{'...' if len(ticket_text) > 200 else ''}")
             st.markdown('</div>', unsafe_allow_html=True)
-
-        classify_button = st.button("🚀 Analyze Ticket", type="primary", use_container_width=True)
-
-    with col2:
-        st.markdown('<div class="zoho-card">', unsafe_allow_html=True)
-        st.markdown("### 🤖 AI Assistant Info")
-        st.info("""
-        **Powered by GPT-5**
-
-        ✓ Auto-classification
-        ✓ Priority detection
-        ✓ Smart routing
-        ✓ KB resolution
-        """)
-        st.markdown('</div>', unsafe_allow_html=True)  # Close zoho-card
+            
+            classify_button = st.button("🚀 Analyze Ticket", type="primary", use_container_width=True)
+        else:
+            st.info("👈 Select a ticket from the left to begin")
+            ticket_subject = ""
+            ticket_text = ""
+            classify_button = False
 
     # Classification logic
     if classify_button:
@@ -592,333 +743,269 @@ def main():
                 result = st.session_state.classifier.classify(ticket_text, ticket_subject)
 
                 if result.get("success"):
-                    st.success("✅ Classification Complete!")
-
                     classification = result["classification"]
                     entities = result.get("entities", {})
                     suggested_response = result.get("suggested_response", "")
 
-                    # Display classification results - Row layout
+                    # Store classification in session state
+                    st.session_state.current_classification = classification
+                    st.session_state.current_ticket_text = ticket_text
+                    st.session_state.current_ticket_subject = ticket_subject
+                    
+                    # Display classification results in the right column
+                    st.markdown("### 🎯 Classification Results")
+                    st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
+                    
+                    # Main Classification Fields
+                    st.markdown("**📋 Classification**")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        st.metric("Category", classification.get("category", "N/A") or "N/A")
+                        st.metric("Sub-Category", classification.get("sub_category", "N/A") or "N/A")
+                    with col2:
+                        st.metric("Tier", classification.get("tier", "N/A") or "N/A")
+                        st.metric("Inventory Type", classification.get("inventory_type", "N/A") or "N/A")
+                    
                     st.markdown("---")
-                    st.markdown('<span class="ticket-badge badge-resolved">AUTO-CLASSIFIED</span>', unsafe_allow_html=True)
-                    st.markdown("")
+                    
+                    # Contact & Dealer Information - More Visible
+                    st.markdown("### 👤 Contact & Dealer")
+                    col1, col2 = st.columns(2)
+                    with col1:
+                        dealer_name = classification.get('dealer_name', '') or 'N/A'
+                        dealer_id = classification.get('dealer_id', '') or 'N/A'
+                        st.markdown(f"**Dealer Name:** {dealer_name}")
+                        st.markdown(f"**Dealer ID:** {dealer_id}")
+                    with col2:
+                        contact = classification.get('contact', '') or classification.get('contact_name', '') or 'N/A'
+                        rep = classification.get('rep', '') or classification.get('rep_name', '') or 'N/A'
+                        st.markdown(f"**Contact:** {contact}")
+                        st.markdown(f"**Rep:** {rep}")
+                    
+                    st.markdown("---")
+                    
+                    # Integrations - More Visible
+                    st.markdown("### 🔗 Integrations")
+                    syndicator = classification.get('syndicator', '') or 'N/A'
+                    provider = classification.get('provider', '') or 'N/A'
+                    if syndicator != 'N/A' and syndicator:
+                        st.markdown(f"**Syndicator:** {syndicator}")
+                    if provider != 'N/A' and provider:
+                        st.markdown(f"**Provider:** {provider}")
+                    if (not syndicator or syndicator == 'N/A') and (not provider or provider == 'N/A'):
+                        st.markdown("*No integrations specified*")
+                    
+                    st.markdown('</div>', unsafe_allow_html=True)
+                    
+                    # Trigger KB search automatically after classification
+                    st.session_state.auto_search_kb = True
+                    st.session_state.current_classification = classification
+                    st.session_state.current_ticket_text = ticket_text
+                    st.session_state.current_ticket_subject = ticket_subject
+                    st.rerun()
 
-                    # Row 1: Main Classification
-                    st.markdown("**🎯 Classification Details**")
-                    c1, c2, c3, c4 = st.columns(4)
-                    with c1:
-                        st.metric("Category", classification.get("category", "N/A"))
-                    with c2:
-                        st.metric("Sub-Category", classification.get("sub_category", "N/A"))
-                    with c3:
-                        st.metric("Tier", classification.get("tier", "N/A"))
-                    with c4:
-                        st.metric("Inventory Type", classification.get("inventory_type", "N/A"))
+    # Auto-trigger KB search after classification
+    if st.session_state.get('auto_search_kb') and st.session_state.get('current_classification'):
+        classification = st.session_state.current_classification
+        ticket_text = st.session_state.current_ticket_text
+        ticket_subject = st.session_state.current_ticket_subject
+        st.session_state.auto_search_kb = False  # Reset flag
+        
+        # Display classification results above resolution steps
+        st.markdown("---")
+        st.markdown("### 🎯 Classification Results")
+        st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
+        
+        # Main Classification Fields
+        st.markdown("**📋 Classification**")
+        col1, col2 = st.columns(2)
+        with col1:
+            st.metric("Category", classification.get("category", "N/A") or "N/A")
+            st.metric("Sub-Category", classification.get("sub_category", "N/A") or "N/A")
+        with col2:
+            st.metric("Tier", classification.get("tier", "N/A") or "N/A")
+            st.metric("Inventory Type", classification.get("inventory_type", "N/A") or "N/A")
+        
+        st.markdown("---")
+        
+        # Contact & Dealer Information - More Visible
+        st.markdown("### 👤 Contact & Dealer")
+        col1, col2 = st.columns(2)
+        with col1:
+            dealer_name = classification.get('dealer_name', '') or 'N/A'
+            dealer_id = classification.get('dealer_id', '') or 'N/A'
+            st.markdown(f"**Dealer Name:** {dealer_name}")
+            st.markdown(f"**Dealer ID:** {dealer_id}")
+        with col2:
+            contact = classification.get('contact', '') or classification.get('contact_name', '') or 'N/A'
+            rep = classification.get('rep', '') or classification.get('rep_name', '') or 'N/A'
+            st.markdown(f"**Contact:** {contact}")
+            st.markdown(f"**Rep:** {rep}")
+        
+        st.markdown("---")
+        
+        # Integrations - More Visible
+        st.markdown("### 🔗 Integrations")
+        syndicator = classification.get('syndicator', '') or 'N/A'
+        provider = classification.get('provider', '') or 'N/A'
+        if syndicator != 'N/A' and syndicator:
+            st.markdown(f"**Syndicator:** {syndicator}")
+        if provider != 'N/A' and provider:
+            st.markdown(f"**Provider:** {provider}")
+        if (not syndicator or syndicator == 'N/A') and (not provider or provider == 'N/A'):
+            st.markdown("*No integrations specified*")
+        
+        st.markdown('</div>', unsafe_allow_html=True)
+        
+        # ========== BOTTOM ROW: Resolution Steps (1/2) + Dealership Config (1/2) ==========
+        st.markdown("---")
+        st.markdown("### 📚 Knowledge Base Resolution")
+        
+        if st.session_state.kb_ready:
+            with st.spinner("Searching Knowledge Base for relevant solutions..."):
+                # Search KB using classification
+                kb_results = st.session_state.kb.search_articles(
+                    query=ticket_text,
+                    classification=classification
+                )
 
-                    st.markdown("")
+                if kb_results:
+                    # Use AI to analyze and select best article
+                    with st.spinner("AI is analyzing the best solution..."):
+                        try:
+                            # Prepare context for AI
+                            top_articles = kb_results[:3]
+                            articles_context = "\n\n".join([
+                                f"Article {i+1} (Confidence: {art['confidence']}%):\n"
+                                f"Title: {art['article'].get('title')}\n"
+                                f"Problem: {art['article'].get('problem')}\n"
+                                f"Solution: {art['article'].get('solution')}\n"
+                                f"Steps: {json.dumps(art['article'].get('steps', []))}"
+                                for i, art in enumerate(top_articles)
+                            ])
 
-                    # Row 2: Contact & Dealer
-                    st.markdown("**👤 Contact & Dealer Information**")
-                    c1, c2, c3, c4 = st.columns(4)
-                    with c1:
-                        st.metric("Contact", classification.get("contact", "N/A"))
-                    with c2:
-                        st.metric("Dealer Name", classification.get("dealer_name", "N/A"))
-                    with c3:
-                        st.metric("Dealer ID", classification.get("dealer_id", "N/A"))
-                    with c4:
-                        st.metric("Rep", classification.get("rep", "N/A"))
+                            # AI prompt to select and adapt solution
+                            client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+                            ai_prompt = f"""You are a support agent AI assistant. Select the KB article and adapt its steps to this specific ticket.
 
-                    st.markdown("")
+Ticket:
+- Category: {classification.get('category')}
+- Dealer: {classification.get('dealer_name')}
+- Syndicator: {classification.get('syndicator')}
+- Provider: {classification.get('provider')}
 
-                    # Row 3: Integrations
-                    st.markdown("**🔗 Integrations**")
-                    c1, c2 = st.columns(2)
-                    with c1:
-                        st.metric("Syndicator", classification.get("syndicator", "N/A") or "N/A")
-                    with c2:
-                        st.metric("Provider", classification.get("provider", "N/A") or "N/A")
+Content: {ticket_text}
 
-                    # Sentiment Analysis Display (hidden in Demo Mode)
-                    sentiment = result.get("sentiment", {})
-                    demo_mode = st.session_state.get('demo_mode', False)
-                    if sentiment and not demo_mode:
-                        # Add sentiment as a new row
-                        st.markdown("")
-                        col1_s, col2_s, col3_s = st.columns(3)
+KB Articles:
+{articles_context}
 
-                        with col1_s:
-                            st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
-                            st.markdown("**💭 Sentiment & Risk**")
+CRITICAL INSTRUCTIONS:
+1. Select the best matching KB article
+2. USE THE KB ARTICLE'S STEPS AS-IS, only replace placeholders with actual values from the ticket
+3. DO NOT add edge cases unless the ticket explicitly mentions a complication
+4. DO NOT add warnings about credentials, access, or obvious things
+5. Keep it simple - trust the KB steps
 
-                            sentiment_label = sentiment.get("label", "Neutral")
-                            sentiment_score = sentiment.get("score", 0)
+Return JSON:
+{{
+  "selected_article_id": <1-3>,
+  "confidence": <80-100 for clear matches>,
+  "edge_cases_detected": [],
+  "resolution_steps": ["KB step adapted to this ticket", ...],
+  "additional_notes": "",
+  "reasoning": "Matches the ticket type"
+}}
+"""
 
-                            # Color-coded sentiment badge
-                            if sentiment_score > 20:
-                                st.success(f"🟢 {sentiment_label} (+{sentiment_score})")
-                            elif sentiment_score < -20:
-                                st.error(f"🔴 {sentiment_label} ({sentiment_score})")
-                            else:
-                                st.info(f"🟡 {sentiment_label} ({sentiment_score})")
-
-                            urgency = sentiment.get("urgency_level", "Medium")
-                            urgency_icons = {
-                                "Critical": "⚡",
-                                "High": "🔥",
-                                "Medium": "⚠️",
-                                "Low": "📋"
-                            }
-                            icon = urgency_icons.get(urgency, "📋")
-                            st.metric("Urgency", f"{icon} {urgency}")
-
-                            escalation_risk = sentiment.get("escalation_risk", "Low")
-                            if escalation_risk in ["High", "Critical"]:
-                                st.error(f"⚠️ Risk: {escalation_risk}")
-                            elif escalation_risk == "Medium":
-                                st.warning(f"⚠️ Risk: {escalation_risk}")
-                            else:
-                                st.success(f"✅ Risk: {escalation_risk}")
-                            st.markdown('</div>', unsafe_allow_html=True)
-
-                        # Show flags and recommendations
-                        flags = sentiment.get("flags", [])
-                        if flags:
-                            with col2_s:
-                                st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
-                                st.markdown("**🚩 Alert Flags**")
-                                for flag in flags:
-                                    if "CRITICAL" in flag:
-                                        st.error(f"• {flag}")
-                                    elif "HIGH" in flag or "EXECUTIVE" in flag:
-                                        st.warning(f"• {flag}")
-                                    else:
-                                        st.info(f"• {flag}")
-                                st.markdown('</div>', unsafe_allow_html=True)
-
-                        recommendations = sentiment.get("recommendations", [])
-                        if recommendations:
-                            target_col = col3_s if flags else col2_s
-                            with target_col:
-                                st.markdown('<div class="zoho-card-compact">', unsafe_allow_html=True)
-                                st.markdown("**💡 Recommended Actions**")
-                                for rec in recommendations:
-                                    st.markdown(f"• {rec}")
-                                st.markdown('</div>', unsafe_allow_html=True)
-
-                    # Additional Info in expanders
-                    col_exp1, col_exp2, col_exp3 = st.columns(3)
-                    with col_exp1:
-                        # Entities (additional context)
-                        if entities:
-                            with st.expander("🔍 Extracted Entities & Context"):
-                                st.json(entities)
-
-                        # Suggested response
-                        if suggested_response:
-                            with st.expander("💬 AI Suggested Response"):
-                                st.markdown(suggested_response)
-
-                    # ========== STEP 2: KB SEARCH & RESOLUTION ==========
-                    st.markdown('<div class="zoho-card">', unsafe_allow_html=True)
-                    demo_mode = st.session_state.get('demo_mode', False)
-                    kb_header = "📚 STEP 2: Knowledge Base Resolution" if demo_mode else "📚 Knowledge Base Resolution"
-                    st.markdown(f'<div class="zoho-card-header">{kb_header}</div>', unsafe_allow_html=True)
-
-                    if st.session_state.kb_ready:
-                        with st.spinner("Searching Knowledge Base for relevant solutions..."):
-                            # Search KB using classification
-                            kb_results = st.session_state.kb.search_articles(
-                                query=ticket_text,
-                                classification=classification
+                            response = client.responses.create(
+                                model=os.getenv("OPENAI_MODEL", "gpt-5-mini"),
+                                input=ai_prompt,
+                                reasoning={"effort": os.getenv("OPENAI_REASONING_EFFORT", "low")}
                             )
 
-                            if kb_results:
-                                # Check if confidence is low (KB gap detected)
-                                best_confidence = kb_results[0]['confidence'] if kb_results else 0
-                                if best_confidence < 50:
-                                    st.warning(f"🔍 **KB Coverage Gap Detected!** Best match confidence is only {best_confidence}%. This ticket type may need a new KB article.")
+                            ai_analysis = json.loads(response.output_text)
+                            
+                            # Get selected article info
+                            selected_idx = ai_analysis.get("selected_article_id", 1) - 1
+                            selected_article = None
+                            if selected_idx >= 0 and selected_idx < len(top_articles):
+                                selected_article = top_articles[selected_idx]['article']
+                            
+                            confidence = ai_analysis.get("confidence", 0)
+                            resolution_steps = ai_analysis.get("resolution_steps", [])
+                            
+                            # Prepare ticket context for automation
+                            ticket_context = {
+                                "dealer_name": classification.get("dealer_name", ""),
+                                "syndicator": classification.get("syndicator", ""),
+                                "provider": classification.get("provider", ""),
+                                "category": classification.get("category", "")
+                            }
+                            
+                            # Show selected article and confidence
+                            if selected_article:
+                                st.success(f"✅ **Selected Solution:** {selected_article.get('title')}")
+                                confidence_color = "🟢" if confidence >= 80 else "🟡" if confidence >= 60 else "🔴"
+                                st.caption(f"Confidence: {confidence_color} {confidence}%")
+                            
+                            st.markdown("---")
+                            
+                            # Layout: Resolution Steps (left 1/2) + Dealership Config (right 1/2)
+                            col_steps, col_config = st.columns([1, 1])
+                            
+                            with col_steps:
+                                st.markdown("### 📋 Resolution Steps")
+                                render_resolution_steps_with_automation(resolution_steps, ticket_context)
+                            
+                            with col_config:
+                                st.markdown("### ⚙️ Client Configuration")
+                                display_client_configuration(ticket_context.get("dealer_name", ""))
+                            
+                            # Cache for feedback
+                            if selected_idx >= 0 and selected_idx < len(top_articles):
+                                selected_article_id = top_articles[selected_idx]['article'].get('id')
+                                st.session_state.current_resolution = {
+                                    "steps": resolution_steps,
+                                    "selected_article_id": selected_article_id,
+                                    "confidence": confidence
+                                }
+                                st.session_state.current_ticket_data = {
+                                    "text": ticket_text,
+                                    "subject": ticket_subject,
+                                    "classification": classification
+                                }
+                                st.session_state.kb_results_cache = kb_results
 
-                                st.success(f"✅ Found {len(kb_results)} relevant KB articles")
-
-                                # Show top 3 results
-                                st.markdown("**Top Matching Articles:**")
-                                for i, result in enumerate(kb_results[:3], 1):
-                                    article = result['article']
-                                    confidence = result['confidence']
-                                    col1, col2 = st.columns([3, 1])
-                                    with col1:
-                                        st.markdown(f"{i}. **{article.get('title', 'Untitled')}**")
-                                    with col2:
-                                        st.markdown(f"*Confidence: {confidence}%*")
-
-                                st.markdown("---")
-
-                                # Use AI to analyze and select best article
-                                with st.spinner("AI is analyzing the best solution for this ticket..."):
-                                    try:
-                                        # Prepare context for AI
-                                        top_articles = kb_results[:3]
-                                        articles_context = "\n\n".join([
-                                            f"Article {i+1} (Confidence: {art['confidence']}%):\n"
-                                            f"Title: {art['article'].get('title')}\n"
-                                            f"Problem: {art['article'].get('problem')}\n"
-                                            f"Solution: {art['article'].get('solution')}\n"
-                                            f"Steps: {json.dumps(art['article'].get('steps', []))}"
-                                            for i, art in enumerate(top_articles)
-                                        ])
-
-                                        # AI prompt to select and adapt solution
-                                        client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-                                        ai_prompt = f"""You are a support agent AI assistant. Select the KB article and adapt its steps to this specific ticket.
-
-    Ticket:
-    - Category: {classification.get('category')}
-    - Dealer: {classification.get('dealer_name')}
-    - Syndicator: {classification.get('syndicator')}
-    - Provider: {classification.get('provider')}
-
-    Content: {ticket_text}
-
-    KB Articles:
-    {articles_context}
-
-    CRITICAL INSTRUCTIONS:
-    1. Select the best matching KB article
-    2. USE THE KB ARTICLE'S STEPS AS-IS, only replace placeholders with actual values from the ticket
-    3. DO NOT add edge cases unless the ticket explicitly mentions a complication
-    4. DO NOT add warnings about credentials, access, or obvious things
-    5. Keep it simple - trust the KB steps
-
-    For example, if KB says "Visit client page", adapt it to "Visit Dealership_3 page" (using actual dealer name).
-
-    Return JSON:
-    {{
-      "selected_article_id": <1-3>,
-      "confidence": <80-100 for clear matches>,
-      "edge_cases_detected": [],
-      "resolution_steps": ["KB step adapted to this ticket", ...],
-      "additional_notes": "",
-      "reasoning": "Matches the ticket type"
-    }}
-    """
-
-                                        response = client.responses.create(
-                                            model=os.getenv("OPENAI_MODEL", "gpt-5-mini"),
-                                            input=ai_prompt,
-                                            reasoning={"effort": os.getenv("OPENAI_REASONING_EFFORT", "low")}
-                                        )
-
-                                        ai_analysis = json.loads(response.output_text)
-
-                                        # Display AI analysis
-                                        st.success("✅ AI Analysis Complete!")
-
-                                        # Show selected article
-                                        selected_idx = ai_analysis.get("selected_article_id", 1) - 1
-                                        if selected_idx >= 0 and selected_idx < len(top_articles):
-                                            selected_article = top_articles[selected_idx]['article']
-                                            st.info(f"**Selected Solution:** {selected_article.get('title')}")
-
-                                        # Show confidence
-                                        confidence = ai_analysis.get("confidence", 0)
-                                        confidence_color = "🟢" if confidence >= 80 else "🟡" if confidence >= 60 else "🔴"
-                                        st.metric("AI Confidence", f"{confidence_color} {confidence}%")
-
-                                        # Show edge cases if detected
-                                        edge_cases = ai_analysis.get("edge_cases_detected", [])
-                                        if edge_cases:
-                                            st.warning("⚠️ **Edge Cases Detected:**")
-                                            for edge_case in edge_cases:
-                                                st.markdown(f"- {edge_case}")
-
-                                        # Show resolution steps
-                                        st.markdown("### 📋 Resolution Steps for Agent")
-                                        resolution_steps = ai_analysis.get("resolution_steps", [])
-                                        for i, step in enumerate(resolution_steps, 1):
-                                            st.markdown(f"**{i}.** {step}")
-
-                                        # Show additional notes
-                                        notes = ai_analysis.get("additional_notes", "")
-                                        if notes:
-                                            st.info(f"**💡 Note:** {notes}")
-
-                                        # Show reasoning in expander
-                                        reasoning = ai_analysis.get("reasoning", "")
-                                        if reasoning:
-                                            with st.expander("🧠 AI Reasoning"):
-                                                st.markdown(reasoning)
-
-                                        # Quick feedback: Thumbs Up/Down
-                                        st.markdown("---")
-                                        st.markdown("**Quick Feedback: Was this KB article helpful?**")
-                                        col1, col2, col3 = st.columns([1, 1, 4])
-
-                                        # Get the actual article ID from the selected index
-                                        selected_index = ai_analysis.get("selected_article_id", 1) - 1  # Convert to 0-based index
-                                        selected_article_id = None
-                                        if 0 <= selected_index < len(top_articles):
-                                            selected_article_id = top_articles[selected_index]['article'].get('id')
-                                        with col1:
-                                            if st.button("👍 Helpful", key=f"upvote_{selected_article_id}", use_container_width=True):
-                                                if st.session_state.kb.vote_article(selected_article_id, 'up'):
-                                                    st.success("Thanks for the feedback!")
-                                                    st.rerun()
-
-                                        with col2:
-                                            if st.button("👎 Not Helpful", key=f"downvote_{selected_article_id}", use_container_width=True):
-                                                if st.session_state.kb.vote_article(selected_article_id, 'down'):
-                                                    st.info("Feedback recorded. Please provide details in Step 3 below.")
-                                                    st.rerun()
-
-                                        # Show current vote score
-                                        article = st.session_state.kb.get_article(selected_article_id)
-                                        if article:
-                                            upvotes = article.get('upvotes', 0)
-                                            downvotes = article.get('downvotes', 0)
-                                            vote_score = article.get('vote_score', 0)
-                                            if upvotes + downvotes > 0:
-                                                with col3:
-                                                    st.caption(f"📊 Score: {vote_score} ({upvotes}👍 / {downvotes}👎)")
-
-                                        # Get the actual article ID from the selected index
-                                        selected_index = ai_analysis.get("selected_article_id", 1) - 1  # Convert to 0-based index
-                                        actual_article_id = None
-                                        if 0 <= selected_index < len(top_articles):
-                                            actual_article_id = top_articles[selected_index]['article'].get('id')
-
-                                        # Cache resolution data for Step 3
-                                        st.session_state.current_resolution = {
-                                            "steps": resolution_steps,
-                                            "selected_article_id": actual_article_id,
-                                            "confidence": confidence
-                                        }
-                                        st.session_state.current_ticket_data = {
-                                            "text": ticket_text,
-                                            "subject": ticket_subject,
-                                            "classification": classification
-                                        }
-                                        st.session_state.kb_results_cache = kb_results
-
-                                    except Exception as e:
-                                        st.error(f"❌ AI analysis failed: {str(e)}")
-                                        # Fallback: show first article's steps
-                                        st.warning("Showing fallback solution from top KB article:")
-                                        best_article = kb_results[0]['article']
-                                        st.markdown(f"**{best_article.get('title')}**")
-                                        st.markdown(f"**Problem:** {best_article.get('problem')}")
-                                        st.markdown(f"**Solution:** {best_article.get('solution')}")
-                                        st.markdown("**Steps:**")
-                                        for i, step in enumerate(best_article.get('steps', []), 1):
-                                            st.markdown(f"{i}. {step}")
-                            else:
-                                st.warning("⚠️ No matching KB articles found. This may require manual handling.")
-                                st.info("💡 This ticket might be a new type of issue that should be added to the KB after resolution.")
-                    else:
-                        st.error(f"⚠️ Knowledge Base not ready: {st.session_state.get('kb_error', 'Unknown error')}")
-
+                        except Exception as e:
+                            st.error(f"❌ AI analysis failed: {str(e)}")
+                            # Fallback: show first article's steps
+                            st.warning("Showing fallback solution from top KB article:")
+                            best_article = kb_results[0]['article']
+                            st.markdown(f"**{best_article.get('title')}**")
+                            
+                            # Prepare ticket context for automation
+                            ticket_context = {
+                                "dealer_name": classification.get("dealer_name", ""),
+                                "syndicator": classification.get("syndicator", ""),
+                                "provider": classification.get("provider", ""),
+                                "category": classification.get("category", "")
+                            }
+                            
+                            # Layout: Resolution Steps (left 1/2) + Dealership Config (right 1/2)
+                            col_steps, col_config = st.columns([1, 1])
+                            
+                            with col_steps:
+                                st.markdown("### 📋 Resolution Steps")
+                                render_resolution_steps_with_automation(best_article.get('steps', []), ticket_context)
+                            
+                            with col_config:
+                                st.markdown("### ⚙️ Client Configuration")
+                                display_client_configuration(ticket_context.get("dealer_name", ""))
                 else:
-                    st.error(f"❌ Classification failed: {result.get('error', 'Unknown error')}")
+                    st.warning("⚠️ No matching KB articles found. This may require manual handling.")
+                    st.info("💡 This ticket might be a new type of issue that should be added to the KB after resolution.")
+        else:
+            st.error(f"⚠️ Knowledge Base not ready: {st.session_state.get('kb_error', 'Unknown error')}")
 
     # ========== STEP 3: FEEDBACK & KB LEARNING ==========
     # This is OUTSIDE the classify_button block so form submissions work

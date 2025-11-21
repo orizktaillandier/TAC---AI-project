@@ -1,0 +1,176 @@
+{
+  "37f6634219d54faeb83ff43ad11d935c": {
+    "value": {
+      "dealer_name": "",
+      "syndicators_mentioned": [],
+      "providers_mentioned": [],
+      "inventory_type": "New + Used",
+      "action_keywords": [
+        "question",
+        "confirm"
+      ],
+      "problem_indicators": [],
+      "urgency_indicators": [],
+      "multiple_dealers": false,
+      "sentiment": "Neutral",
+      "key_action_items": [
+        "Confirm whether a dealer can have separate feeds for new and used inventory to the same syndicator"
+      ],
+      "additional_questions": [
+        "Can a dealer have separate feeds for new and used inventory going to the same syndicator?"
+      ],
+      "special_requests": []
+    },
+    "timestamp": "2025-11-18T19:44:14.210594",
+    "ttl_hours": 24.0
+  },
+  "d22dbb8556ce7be7ef511ec96b4224fb": {
+    "value": {
+      "dealer_name": "",
+      "syndicators_mentioned": [],
+      "providers_mentioned": [],
+      "inventory_type": "",
+      "action_keywords": [
+        "disable"
+      ],
+      "problem_indicators": [],
+      "urgency_indicators": [],
+      "multiple_dealers": true,
+      "sentiment": "Neutral",
+      "key_action_items": [
+        "Disable exports for Dealership_6",
+        "Disable exports for Dealership_7"
+      ],
+      "additional_questions": [],
+      "special_requests": []
+    },
+    "timestamp": "2025-11-18T19:58:09.119082",
+    "ttl_hours": 24.0
+  },
+  "e5226d6066af2f50f7925fc15d43d13b": {
+    "value": {
+      "dealer_name": "Dealership_3",
+      "syndicators_mentioned": [
+        "Syndicator_Export_1"
+      ],
+      "providers_mentioned": [],
+      "inventory_type": "",
+      "action_keywords": [
+        "cancel",
+        "request"
+      ],
+      "problem_indicators": [],
+      "urgency_indicators": [
+        "ASAP"
+      ],
+      "multiple_dealers": false,
+      "sentiment": "Urgent",
+      "key_action_items": [
+        "Cancel the Syndicator_Export_1 export for Dealership_3"
+      ],
+      "additional_questions": [],
+      "special_requests": [
+        "ASAP / rush this request"
+      ]
+    },
+    "timestamp": "2025-11-19T00:39:55.441592",
+    "ttl_hours": 24.0
+  },
+  "38bd14bb55e025c912ecb00836a570cf": {
+    "value": {
+      "dealer_name": "Dealership_8",
+      "syndicators_mentioned": [
+        "Syndicator_Export_2"
+      ],
+      "providers_mentioned": [],
+      "inventory_type": "",
+      "action_keywords": [
+        "confirm",
+        "status"
+      ],
+      "problem_indicators": [],
+      "urgency_indicators": [],
+      "multiple_dealers": false,
+      "sentiment": "Neutral",
+      "key_action_items": [
+        "Confirm whether the Syndicator_Export_2 integration is live for Dealership_8"
+      ],
+      "additional_questions": [
+        "Can you confirm if the Syndicator_Export_2 integration is live for Dealership_8?"
+      ],
+      "special_requests": []
+    },
+    "timestamp": "2025-11-19T00:46:49.006538",
+    "ttl_hours": 24.0
+  },
+  "d3c14043059245bf49a8d4747f99de36": {
+    "value": {
+      "dealer_name": "Dealership_4",
+      "syndicators_mentioned": [],
+      "providers_mentioned": [
+        "Provider_Import_1"
+      ],
+      "inventory_type": "",
+      "action_keywords": [
+        "problem",
+        "check",
+        "import"
+      ],
+      "problem_indicators": [
+        "sold vehicles still showing",
+        "inventory display issues",
+        "import not updating"
+      ],
+      "urgency_indicators": [],
+      "multiple_dealers": false,
+      "sentiment": "Concerned",
+      "key_action_items": [
+        "Check Provider_Import_1 import",
+        "Remove or update vehicles that were sold",
+        "Fix inventory display issues"
+      ],
+      "additional_questions": [
+        "Can you please check the Provider_Import_1 import?"
+      ],
+      "special_requests": []
+    },
+    "timestamp": "2025-11-20T10:42:34.265952",
+    "ttl_hours": 24.0
+  },
+  "11911f35b1e920d8a3d37f42074eaf27": {
+    "value": {
+      "dealer_name": "Dealership_2",
+      "syndicators_mentioned": [
+        "Syndicator_Export_3"
+      ],
+      "providers_mentioned": [],
+      "inventory_type": "Used",
+      "action_keywords": [
+        "activate",
+        "setup",
+        "start",
+        "advertising"
+      ],
+      "problem_indicators": [],
+      "urgency_indicators": [
+        "as soon as possible",
+        "asap",
+        "urgent"
+      ],
+      "multiple_dealers": false,
+      "sentiment": "Urgent",
+      "key_action_items": [
+        "Activate Syndicator_Export_3 export feed for Dealership_2",
+        "Setup the export feed",
+        "Start advertising Dealership_2's used inventory"
+      ],
+      "additional_questions": [],
+      "special_requests": [
+        "setup as soon as possible",
+        "rush this"
+      ]
+    },
+    "timestamp": "2025-11-21T12:11:29.323215",
+    "ttl_hours": 24.0
+  }
+}

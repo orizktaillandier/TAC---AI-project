@@ -74,7 +74,8 @@ def render_sidebar():
                 "🎯 Agent Interface",
                 "📚 KB Browser",
                 "✏️  KB Builder",
-                "🔍 Audit Dashboard"
+                "🔍 Audit Dashboard",
+                "📊 Gap Analysis"
             ],
             key="page_selector"
         )
@@ -87,6 +88,7 @@ def render_sidebar():
         st.caption("**KB Browser**: Search and explore KB articles")
         st.caption("**KB Builder**: Chat with AI to manage KB articles")
         st.caption("**Audit Dashboard**: Review and approve feedback")
+        st.caption("**Gap Analysis**: Identify knowledge gaps and search patterns")
 
         return page
 
@@ -115,6 +117,12 @@ def run_audit_dashboard():
     kb_audit_dashboard.main()
 
 
+def run_gap_analysis():
+    """Run the Gap Analysis Dashboard"""
+    import gap_analysis_dashboard
+    gap_analysis_dashboard.main()
+
+
 def main():
     """Main application entry point"""
     init_session_state()
@@ -134,6 +142,9 @@ def main():
 
     elif "Audit" in selected_page:
         run_audit_dashboard()
+    
+    elif "Gap Analysis" in selected_page or "Gap" in selected_page:
+        run_gap_analysis()
 
 
 if __name__ == "__main__":

@@ -11,6 +11,8 @@ from typing import List, Dict, Any, Optional
 from datetime import datetime
 from openai import OpenAI
 from dotenv import load_dotenv
+from gap_analysis import GapAnalyzer
+from cache_manager import CacheManager
 
 load_dotenv()
 
@@ -32,6 +34,12 @@ class KnowledgeBase:
             self.model = os.getenv("OPENAI_MODEL", "gpt-5-mini")
         else:
             self.client = None
+
+        # Initialize cache manager for query understanding (12 hour TTL)
+        self.cache = CacheManager(cache_file="kb_query_cache.json", default_ttl_hours=12)
+        
+        # Initialize gap analyzer for search tracking
+        self.gap_analyzer = GapAnalyzer()
 
         self.load()
 
@@ -212,18 +220,22 @@ Return JSON:
 """
 
         try:
-            response = self.client.responses.create(
-                model=self.model,
-                input=prompt,
-                reasoning={"effort": "low"}
-            )
-
-            result = json.loads(response.output_text)
+            # Use cache for query understanding (same query = same expansion)
+            def _call_api():
+                response = self.client.responses.create(
+                    model=self.model,
+                    input=prompt,
+                    reasoning={"effort": "low"}
+                )
+                return json.loads(response.output_text)
+            
+            # Cache based on prompt content
+            result = self.cache.cache_api_call(prompt, _call_api)
             result["original_query"] = query
             return result
 
         except Exception as e:
-            print(f"Query understanding failed: {e}")
+            logger.error(f"Query understanding failed: {e}")
             # Fallback to original query
             return {
                 "original_query": query,
@@ -240,6 +252,11 @@ Return JSON:
         """
         if not query and not classification:
             return self.articles
+
+        # Track search for gap analysis
+        results_found = False
+        result_count = 0
+        article_id = None
 
         # Try semantic search first if embeddings are available
         if query:
@@ -299,6 +316,21 @@ Return JSON:
                                 result['confidence'] = result['score']
 
                         semantic_results.sort(key=lambda x: x['score'], reverse=True)
+                        
+                        # Track search for gap analysis
+                        results_found = len(semantic_results) > 0
+                        result_count = len(semantic_results)
+                        article_id = semantic_results[0]['article']['id'] if semantic_results else None
+                        
+                        # Log search to gap analyzer
+                        self.gap_analyzer.log_search(
+                            query=query,
+                            results_found=results_found,
+                            article_id=article_id,
+                            result_count=result_count,
+                            classification=classification
+                        )
+                        
                         return semantic_results
                 except Exception as e:
                     print(f"Semantic search failed, falling back to keyword search: {e}")
@@ -343,6 +375,22 @@ Return JSON:
 
         # Sort by score
         results.sort(key=lambda x: x['score'], reverse=True)
+        
+        # Track search for gap analysis (keyword search fallback)
+        if query:
+            results_found = len(results) > 0
+            result_count = len(results)
+            article_id = results[0]['article']['id'] if results else None
+            
+            # Log search to gap analyzer
+            self.gap_analyzer.log_search(
+                query=query,
+                results_found=results_found,
+                article_id=article_id,
+                result_count=result_count,
+                classification=classification
+            )
+        
         return results
 
     def record_usage(self, article_id: int, success: bool):
