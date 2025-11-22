@@ -6,12 +6,16 @@ Natural language interface for creating, updating, deleting, and browsing KB art
 import streamlit as st
 import json
 import os
+import logging
 from datetime import datetime
 from openai import OpenAI
 from dotenv import load_dotenv
 from knowledge_base import KnowledgeBase
 
 load_dotenv()
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 # KB Agent Tools/Functions
 KB_TOOLS = [
@@ -360,12 +364,16 @@ def chat_with_agent(user_message, conversation_history, kb, client):
     formatted_tools = _format_tools_for_responses_api(KB_TOOLS)
 
     # Call AI with Responses API (GPT-5)
-    response = client.responses.create(
-        model=os.getenv("OPENAI_MODEL", "gpt-5-mini"),
-        input=full_input,
-        reasoning={"effort": os.getenv("OPENAI_REASONING_EFFORT", "low")},
-        tools=formatted_tools
-    )
+    try:
+        response = client.responses.create(
+            model=os.getenv("OPENAI_MODEL", "gpt-5-mini"),
+            input=full_input,
+            reasoning={"effort": os.getenv("OPENAI_REASONING_EFFORT", "low")},
+            tools=formatted_tools
+        )
+    except Exception as e:
+        logger.error(f"API call failed: {str(e)}")
+        raise Exception(f"Failed to communicate with OpenAI API: {str(e)}. Please check your API key and internet connection.")
 
     # Handle function calls
     if hasattr(response, 'tool_calls') and response.tool_calls:
@@ -381,25 +389,54 @@ def chat_with_agent(user_message, conversation_history, kb, client):
 
         # Get final response after tool execution
         final_input = full_input + "\n\nTool Results:\n" + "\n".join(tool_results_text)
-        final_response = client.responses.create(
-            model=os.getenv("OPENAI_MODEL", "gpt-5-mini"),
-            input=final_input,
-            reasoning={"effort": os.getenv("OPENAI_REASONING_EFFORT", "low")},
-            previous_response_id=response.id,  # Pass CoT from previous turn
-            tools=formatted_tools  # Include tools in final response too
-        )
+        try:
+            final_response = client.responses.create(
+                model=os.getenv("OPENAI_MODEL", "gpt-5-mini"),
+                input=final_input,
+                reasoning={"effort": os.getenv("OPENAI_REASONING_EFFORT", "low")},
+                previous_response_id=response.id,  # Pass CoT from previous turn
+                tools=formatted_tools  # Include tools in final response too
+            )
+        except Exception as e:
+            logger.error(f"Final response API call failed: {str(e)}")
+            # Fallback: return a message based on the tool results
+            response_text = f"I've executed the requested action. {tool_results_text[0] if tool_results_text else 'Action completed.'}"
+            conversation_history.append({"role": "user", "content": user_message})
+            conversation_history.append({"role": "assistant", "content": response_text})
+            return response_text
+
+        # Extract response text safely - try multiple attributes
+        response_text = None
+        if hasattr(final_response, 'output_text'):
+            response_text = final_response.output_text
+        elif hasattr(final_response, 'text'):
+            response_text = final_response.text
+        elif hasattr(final_response, 'content'):
+            response_text = final_response.content
+        else:
+            # Last resort: convert to string
+            response_text = str(final_response)
+            logger.warning(f"Response object structure unexpected. Available attributes: {dir(final_response)}")
+        
+        if not response_text or response_text.strip() == "":
+            response_text = "I've completed the requested action. Is there anything else you'd like to know?"
 
         # Add to conversation history
         conversation_history.append({"role": "user", "content": user_message})
-        conversation_history.append({"role": "assistant", "content": final_response.output_text})
+        conversation_history.append({"role": "assistant", "content": response_text})
 
-        return final_response.output_text
+        return response_text
     else:
         # No function calls, just return the message
-        conversation_history.append({"role": "user", "content": user_message})
-        conversation_history.append({"role": "assistant", "content": response.output_text})
+        # Extract response text safely
+        response_text = getattr(response, 'output_text', None) or getattr(response, 'text', None) or str(response)
+        if not response_text or response_text.strip() == "":
+            response_text = "I'm here to help! What would you like to know about the knowledge base?"
 
-        return response.output_text
+        conversation_history.append({"role": "user", "content": user_message})
+        conversation_history.append({"role": "assistant", "content": response_text})
+
+        return response_text
 
 
 def main():
@@ -552,6 +589,10 @@ When displaying search results or lists, show article IDs, titles, and key metri
                         st.session_state.agent_client
                     )
 
+                    # Ensure response is not empty
+                    if not response or response.strip() == "":
+                        response = "I apologize, but I didn't receive a response. Please try again or rephrase your question."
+
                     # Add assistant response to display
                     st.session_state.chat_messages.append({
                         "role": "assistant",
@@ -560,7 +601,14 @@ When displaying search results or lists, show article IDs, titles, and key metri
 
                     st.rerun()
                 except Exception as e:
-                    st.error(f"Error: {str(e)}")
+                    error_msg = f"Error communicating with AI agent: {str(e)}"
+                    st.error(error_msg)
+                    # Add error to chat for visibility
+                    st.session_state.chat_messages.append({
+                        "role": "assistant",
+                        "content": f"❌ {error_msg}\n\nPlease check:\n- Your OpenAI API key is set correctly in .env\n- You have API credits available\n- Your internet connection is stable"
+                    })
+                    st.rerun()
 
     with col_preview:
         st.markdown("### 📄 Article Preview")
