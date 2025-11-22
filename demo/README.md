@@ -14,21 +14,29 @@ pip install -r requirements.txt
 
 Create a `.env` file in the `demo/` directory:
 
+**Option 1: Copy from template**
 ```bash
 cp .env.example .env
 ```
+Then edit `.env` and replace `sk-your-actual-api-key-here` with your actual OpenAI API key.
 
-Edit `.env` and add your OpenAI API key:
-
+**Option 2: Create manually**
+Create a `.env` file with the following content:
 ```
 OPENAI_API_KEY=sk-your-actual-api-key-here
 OPENAI_MODEL=gpt-5-mini
 OPENAI_REASONING_EFFORT=low
 ```
 
+**Get your API key:** https://platform.openai.com/api-keys
+
 ### 3. Run the Demo
 
 ```bash
+# Main unified interface (recommended)
+streamlit run unified_kb_system.py
+
+# OR run the agent interface directly
 streamlit run demo_app.py
 ```
 

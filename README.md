@@ -34,11 +34,18 @@ cd TAC---AI-project/demo
 pip install -r requirements.txt
 
 # Configure API key
+# Create .env file from template
 cp .env.example .env
-# Edit .env and add your OpenAI API key
+# Edit .env and add your OpenAI API key:
+# OPENAI_API_KEY=sk-your-actual-api-key-here
+
+# OR create .env manually with:
+# OPENAI_API_KEY=sk-your-actual-api-key-here
+# OPENAI_MODEL=gpt-5-mini
+# OPENAI_REASONING_EFFORT=low
 
 # Run the demo
-streamlit run demo_app.py
+streamlit run unified_kb_system.py
 ```
 
 The app will open at `http://localhost:8501`

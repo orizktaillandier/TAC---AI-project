@@ -5,6 +5,7 @@ auth.json
 *.env
 .env
 .env.*
+!.env.example
 .env.backup
 .vscode/
 .idea/
