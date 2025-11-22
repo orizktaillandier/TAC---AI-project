@@ -407,19 +407,48 @@ def chat_with_agent(user_message, conversation_history, kb, client):
 
         # Extract response text safely - try multiple attributes
         response_text = None
+        
+        # Debug: Log response object structure
+        logger.info(f"Final response type: {type(final_response)}")
+        logger.info(f"Final response attributes: {[attr for attr in dir(final_response) if not attr.startswith('_')]}")
+        
+        # Try multiple ways to get the text
         if hasattr(final_response, 'output_text'):
             response_text = final_response.output_text
-        elif hasattr(final_response, 'text'):
+            logger.info(f"Found output_text: {response_text[:100] if response_text else 'EMPTY'}")
+        if (not response_text or response_text.strip() == "") and hasattr(final_response, 'text'):
             response_text = final_response.text
-        elif hasattr(final_response, 'content'):
+            logger.info(f"Found text: {response_text[:100] if response_text else 'EMPTY'}")
+        if (not response_text or response_text.strip() == "") and hasattr(final_response, 'content'):
             response_text = final_response.content
-        else:
-            # Last resort: convert to string
-            response_text = str(final_response)
-            logger.warning(f"Response object structure unexpected. Available attributes: {dir(final_response)}")
+            logger.info(f"Found content: {response_text[:100] if response_text else 'EMPTY'}")
+        if (not response_text or response_text.strip() == "") and hasattr(final_response, 'message'):
+            if hasattr(final_response.message, 'content'):
+                response_text = final_response.message.content
+                logger.info(f"Found message.content: {response_text[:100] if response_text else 'EMPTY'}")
         
+        # If still empty, try to get from response object directly
         if not response_text or response_text.strip() == "":
-            response_text = "I've completed the requested action. Is there anything else you'd like to know?"
+            # Try to inspect the response object more deeply
+            try:
+                response_dict = final_response.model_dump() if hasattr(final_response, 'model_dump') else vars(final_response)
+                logger.info(f"Response dict keys: {list(response_dict.keys()) if isinstance(response_dict, dict) else 'Not a dict'}")
+                # Look for any text-like fields
+                for key, value in (response_dict.items() if isinstance(response_dict, dict) else []):
+                    if 'text' in key.lower() or 'content' in key.lower() or 'output' in key.lower():
+                        if isinstance(value, str) and value.strip():
+                            response_text = value
+                            logger.info(f"Found text in {key}: {response_text[:100]}")
+                            break
+            except Exception as e:
+                logger.warning(f"Could not inspect response object: {e}")
+        
+        # Last resort: convert to string or use fallback
+        if not response_text or response_text.strip() == "":
+            response_text = str(final_response) if final_response else ""
+            if not response_text or response_text.strip() == "":
+                response_text = "I've completed the requested action. Is there anything else you'd like to know?"
+            logger.warning(f"Using fallback response. Response object: {type(final_response)}")
 
         # Add to conversation history
         conversation_history.append({"role": "user", "content": user_message})
@@ -428,10 +457,49 @@ def chat_with_agent(user_message, conversation_history, kb, client):
         return response_text
     else:
         # No function calls, just return the message
-        # Extract response text safely
-        response_text = getattr(response, 'output_text', None) or getattr(response, 'text', None) or str(response)
+        # Extract response text safely - same robust extraction as above
+        response_text = None
+        
+        # Debug: Log response object structure
+        logger.info(f"Response type (no tools): {type(response)}")
+        logger.info(f"Response attributes: {[attr for attr in dir(response) if not attr.startswith('_')]}")
+        
+        # Try multiple ways to get the text
+        if hasattr(response, 'output_text'):
+            response_text = response.output_text
+            logger.info(f"Found output_text: {response_text[:100] if response_text else 'EMPTY'}")
+        if (not response_text or response_text.strip() == "") and hasattr(response, 'text'):
+            response_text = response.text
+            logger.info(f"Found text: {response_text[:100] if response_text else 'EMPTY'}")
+        if (not response_text or response_text.strip() == "") and hasattr(response, 'content'):
+            response_text = response.content
+            logger.info(f"Found content: {response_text[:100] if response_text else 'EMPTY'}")
+        if (not response_text or response_text.strip() == "") and hasattr(response, 'message'):
+            if hasattr(response.message, 'content'):
+                response_text = response.message.content
+                logger.info(f"Found message.content: {response_text[:100] if response_text else 'EMPTY'}")
+        
+        # If still empty, try to inspect the response object
         if not response_text or response_text.strip() == "":
-            response_text = "I'm here to help! What would you like to know about the knowledge base?"
+            try:
+                response_dict = response.model_dump() if hasattr(response, 'model_dump') else vars(response)
+                logger.info(f"Response dict keys: {list(response_dict.keys()) if isinstance(response_dict, dict) else 'Not a dict'}")
+                # Look for any text-like fields
+                for key, value in (response_dict.items() if isinstance(response_dict, dict) else []):
+                    if 'text' in key.lower() or 'content' in key.lower() or 'output' in key.lower():
+                        if isinstance(value, str) and value.strip():
+                            response_text = value
+                            logger.info(f"Found text in {key}: {response_text[:100]}")
+                            break
+            except Exception as e:
+                logger.warning(f"Could not inspect response object: {e}")
+        
+        # Last resort
+        if not response_text or response_text.strip() == "":
+            response_text = str(response) if response else ""
+            if not response_text or response_text.strip() == "":
+                response_text = "I'm here to help! What would you like to know about the knowledge base?"
+            logger.warning(f"Using fallback response. Response object: {type(response)}")
 
         conversation_history.append({"role": "user", "content": user_message})
         conversation_history.append({"role": "assistant", "content": response_text})
@@ -508,6 +576,11 @@ def main():
     # Header
     st.markdown("## 🤖 KB Agent Chat")
     st.markdown("*Conversational AI interface for managing your knowledge base*")
+    
+    # Debug mode toggle (in sidebar or header)
+    debug_mode = st.sidebar.checkbox("🔍 Enable Debug Mode", value=st.session_state.get('debug_mode', False), help="Shows detailed response information for troubleshooting")
+    st.session_state.debug_mode = debug_mode
+    
     st.markdown("---")
 
     # Initialize session state
@@ -515,7 +588,20 @@ def main():
         st.session_state.kb_agent = KnowledgeBase()
 
     if "agent_client" not in st.session_state:
-        st.session_state.agent_client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+        api_key = os.getenv("OPENAI_API_KEY")
+        if not api_key:
+            st.error("❌ OPENAI_API_KEY not found in environment. Please check your .env file.")
+            st.stop()
+        st.session_state.agent_client = OpenAI(api_key=api_key)
+        
+    # Configure logging to show debug info
+    import sys
+    if not logging.getLogger().handlers:
+        logging.basicConfig(
+            level=logging.INFO,
+            format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+            handlers=[logging.StreamHandler(sys.stdout)]
+        )
 
     if "conversation_history" not in st.session_state:
         st.session_state.conversation_history = [
@@ -589,9 +675,27 @@ When displaying search results or lists, show article IDs, titles, and key metri
                         st.session_state.agent_client
                     )
 
+                    # Debug: Show what we received
+                    if st.session_state.get('debug_mode', False):
+                        with st.expander("🔍 Debug Info"):
+                            st.write(f"Response type: {type(response)}")
+                            st.write(f"Response value: {repr(response)}")
+                            st.write(f"Response length: {len(str(response)) if response else 0}")
+                    
                     # Ensure response is not empty
-                    if not response or response.strip() == "":
-                        response = "I apologize, but I didn't receive a response. Please try again or rephrase your question."
+                    if not response or (isinstance(response, str) and response.strip() == ""):
+                        # Log the issue for debugging
+                        error_msg = "⚠️ Received empty response from AI. This might be a response structure issue. Check console/terminal for detailed logs."
+                        st.warning(error_msg)
+                        # Try to get more info about the response
+                        with st.expander("🔍 Debug: Empty Response"):
+                            st.code(f"Response type: {type(response)}\nResponse: {repr(response)}")
+                        response = "I apologize, but I didn't receive a response. Please check the debug info above or try again."
+                    elif not isinstance(response, str):
+                        # Response is not a string - convert it
+                        response = str(response)
+                        if not response or response.strip() == "":
+                            response = "I apologize, but I didn't receive a valid response. Please try again."
 
                     # Add assistant response to display
                     st.session_state.chat_messages.append({
