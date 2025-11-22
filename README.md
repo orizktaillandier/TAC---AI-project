@@ -44,6 +44,9 @@ cp .env.example .env
 # OPENAI_MODEL=gpt-5-mini
 # OPENAI_REASONING_EFFORT=low
 
+# Note: .env files are NOT in the repo (for security).
+# If setting up on a new PC, see SETUP_ON_NEW_PC.md for instructions.
+
 # Run the demo
 streamlit run unified_kb_system.py
 ```
